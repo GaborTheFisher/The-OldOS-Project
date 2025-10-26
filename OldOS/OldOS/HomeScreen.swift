@@ -311,15 +311,17 @@ struct home_bar: View {
     @Binding var show_folder: Bool
     
     @State private var isPressed: Bool = false
-    @State private var forceTouchAvailable: Bool = false
     
-    // Added state variables for force press handling
+    // A single DispatchWorkItem is used for both gesture types to schedule the single-press action
+    @State private var tapWorkItem: DispatchWorkItem?
+
+    // State for detecting Force Touch capability
+    @State private var forceTouchAvailable: Bool = false
     @State private var lastForcePressDate: Date? = nil
-    @State private var forcePressCount: Int = 0
     
     var body: some View {
         ZStack {
-            Color.black.edgesIgnoringSafeArea(.all)
+            // MARK: Button Visuals
             ZStack {
                 Circle().fill(Color.black).frame(width: 65, height:65).overlay(
                     Circle()
@@ -333,81 +335,98 @@ struct home_bar: View {
             }
             .scaleEffect(isPressed ? 0.93 : 1.0)
             .shadow(color: isPressed ? Color.gray.opacity(0.4) : Color.clear, radius: 4, x: 0, y: 1)
-            .background(
-                Group {
-                    if !forceTouchAvailable {
-                        Color.clear.tapRecognizer(tapSensitivity: 0.2, singleTapAction: {
-                            // Only perform home action on single tap when not showing multitasking and no force press counts
-                            if show_multitasking == false && forcePressCount == 0 {
-                                isPressed = true
-                                let impact = UIImpactFeedbackGenerator(style: .medium)
-                                impact.impactOccurred()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.09) { isPressed = false }
-                                performHomeAction()
+            
+            // MARK: Conditional Gesture Logic
+            Group {
+                if forceTouchAvailable {
+                    ForceTouchGestureView(pressedChanged: { pressed in
+                        if pressed != isPressed {
+                            isPressed = pressed
+                            
+                            if pressed {
+                                // --- PRESS DOWN ---
+                                handlePressDown()
+                            } else {
+                                // --- PRESS UP ---
+                                handlePressUp()
                             }
-                        }, doubleTapAction: {
-                            isPressed = true
-                            let impact = UIImpactFeedbackGenerator(style: .medium)
-                            impact.impactOccurred()
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.09) { isPressed = false }
-                            performDoubleHomeAction()
-                        })
-                    }
-                }
-            )
-            .overlay(
-                Group {
-                    if forceTouchAvailable {
-                        ForceTouchGestureView(pressedChanged: { pressed in
-                            if pressed != isPressed {
-                                isPressed = pressed
-                                if pressed {
-                                    let now = Date()
-                                    let impact = UIImpactFeedbackGenerator(style: .medium)
-                                    impact.impactOccurred()
-                                    if let lastDate = lastForcePressDate, now.timeIntervalSince(lastDate) < 0.33 {
-                                        forcePressCount += 1
-                                        if forcePressCount == 2 {
-                                            // Double force press detected
-                                            performDoubleHomeAction()
-                                            // Block performHomeAction from firing after double press
-                                            forcePressCount = 0
-                                            lastForcePressDate = nil
-                                        }
-                                    } else {
-                                        forcePressCount = 1
-                                        lastForcePressDate = now
-                                        // Only perform home action if not multitasking, and no double press expected
-                                        if show_multitasking == false {
-                                            performHomeAction()
-                                        }
-                                        // Schedule reset after 0.33 seconds if no second press
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.33) {
-                                            if let lastDate = lastForcePressDate {
-                                                if Date().timeIntervalSince(lastDate) >= 0.33 {
-                                                    forcePressCount = 0
-                                                    lastForcePressDate = nil
-                                                }
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    let impact = UIImpactFeedbackGenerator(style: .light)
-                                    impact.impactOccurred()
-                                }
-                            }
-                        })
-                        .allowsHitTesting(true)
+                        }
+                    })
+                    .frame(width: 65, height: 65)
+                } else {
+                    // --- Fallback for non-3D Touch devices ---
+                    Color.clear
                         .frame(width: 65, height: 65)
-                    }
+                        .contentShape(Rectangle())
+                        .onTapGesture(count: 2) {
+                            self.tapWorkItem?.cancel()
+                            handleTapFeedback()
+                            performDoubleHomeAction()
+                        }
+                        .onTapGesture(count: 1) {
+                            handleTapFeedback()
+                            self.tapWorkItem = DispatchWorkItem { performHomeAction() }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: self.tapWorkItem!)
+                        }
                 }
-            )
-            .onAppear {
-                forceTouchAvailable = detectForceTouchSupport()
             }
+        }
+        .onAppear {
+            self.forceTouchAvailable = self.detectForceTouchSupport()
         }
         .padding()
     }
+    
+    // MARK: - Action & Feedback Handlers
+    
+    private func handlePressDown() {
+        let now = Date()
+        let impact = UIImpactFeedbackGenerator(style: .heavy)
+        impact.impactOccurred()
+        
+        // A second press will cancel the scheduled single-press action
+        tapWorkItem?.cancel()
+
+        if let lastDate = lastForcePressDate, now.timeIntervalSince(lastDate) < 0.33 {
+            // This is a DOUBLE PRESS
+            performDoubleHomeAction()
+            lastForcePressDate = nil // Reset to prevent triple-press issues
+        } else {
+            // This is a SINGLE PRESS
+            lastForcePressDate = now
+            
+            // FIX: Instead of calling the action directly, schedule it.
+            tapWorkItem = DispatchWorkItem {
+                // Prevent the single action if a double press was just recognized
+                if self.lastForcePressDate != nil {
+                    self.performHomeAction()
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: tapWorkItem!)
+        }
+    }
+    
+    private func handlePressUp() {
+        let impact = UIImpactFeedbackGenerator(style: .light)
+        impact.impactOccurred()
+    }
+    
+    private func handleTapFeedback() {
+        isPressed = true
+        let impact = UIImpactFeedbackGenerator(style: .medium)
+        impact.impactOccurred()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.09) { isPressed = false }
+    }
+    
+    private func detectForceTouchSupport() -> Bool {
+        guard let window = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .flatMap({ $0.windows })
+                .first(where: { $0.isKeyWindow }) else { return false }
+        return window.traitCollection.forceTouchCapability == .available
+    }
+
+    // MARK: - Home Button Actions (Unchanged from original)
     
     private func performHomeAction() {
         if show_multitasking == false {
@@ -415,7 +434,7 @@ struct home_bar: View {
                 withAnimation(.linear(duration: 0.35)) {
                     self.current_view = "HS"
                 }
-                DispatchQueue.global().asyncAfter(deadline:.now()+0.01) { //I wish I knew why, but we can no longer render this on main, it needs to be on global to avoid LazyVGrid rendering errors
+                DispatchQueue.global().asyncAfter(deadline:.now()+0.01) {
                     withAnimation(.linear(duration: 0.42)) {
                         apps_scale = 1
                         dock_offset = 0
@@ -423,12 +442,9 @@ struct home_bar: View {
                 }
             } else {
                 withAnimation() {
-                    // when on the first page, pressing the home button shows the spotlight search
-                    // https://www.youtube.com/watch?v=hMZXnyk2SJA
                     if show_folder && folder_offset == 150 {
                         withAnimation(.linear(duration: 0.32)) {
                             folder_offset = 0
-                            //dock_offset = 150
                         }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
                             show_folder = false
@@ -481,11 +497,6 @@ struct home_bar: View {
                 momentary_disable = false
             }
         }
-    }
-    
-    private func detectForceTouchSupport() -> Bool {
-        guard let window = UIApplication.shared.windows.first else { return false }
-        return window.traitCollection.forceTouchCapability == .available
     }
 }
 
@@ -1809,26 +1820,47 @@ struct ForceTouchGestureView: UIViewRepresentable {
     }
     func updateUIView(_ uiView: UIViewType, context: Context) {}
 }
+
 private class TouchForwardingView: UIView {
     var pressedChanged: ((Bool) -> Void)?
     var minimumForce: CGFloat = 0.25
+    private var isPressedState: Bool = false // Internal state to track changes
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let force = touches.first?.force, let max = touches.first?.maximumPossibleForce, max > 0 {
-            if force / max > minimumForce {
-                pressedChanged?(true)
-            }
-        }
+        super.touchesBegan(touches, with: event)
+        handleForce(touch: touches.first)
     }
+
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let force = touches.first?.force, let max = touches.first?.maximumPossibleForce, max > 0 {
-            pressedChanged?(force / max > minimumForce)
+        super.touchesMoved(touches, with: event)
+        handleForce(touch: touches.first)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        if isPressedState {
+            isPressedState = false
+            pressedChanged?(false)
         }
     }
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        pressedChanged?(false)
-    }
+
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        pressedChanged?(false)
+        super.touchesCancelled(touches, with: event)
+        if isPressedState {
+            isPressedState = false
+            pressedChanged?(false)
+        }
+    }
+
+    private func handleForce(touch: UITouch?) {
+        guard let touch = touch, touch.maximumPossibleForce > 0 else { return }
+        let isNowPressed = touch.force / touch.maximumPossibleForce > minimumForce
+        
+        // Only call the closure if the state has actually changed.
+        if isPressedState != isNowPressed {
+            isPressedState = isNowPressed
+            pressedChanged?(isPressedState)
+        }
     }
 }
 
