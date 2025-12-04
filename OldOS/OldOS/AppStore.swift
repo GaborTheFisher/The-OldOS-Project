@@ -156,7 +156,7 @@ struct updatable_applications: View {
             VStack(spacing:0) {
                 ScrollView(showsIndicators: true) {
                         ZStack {
-                            Text("All Apps Are Up to Date").multilineTextAlignment(.center).foregroundColor(Color(red: 48/255, green: 57/255, blue: 70/255)).font(.custom("Helvetica Neue Bold", size: 16)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9)
+                            Text("All Apps Are Up to Date").multilineTextAlignment(.center).foregroundColor(Color(red: 48/255, green: 57/255, blue: 70/255)).font(.custom("Helvetica Neue Bold", fixedSize: 16)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9)
                         }.frame(width:geometry.size.width, height:geometry.size.height)
                     }
             }
@@ -178,7 +178,7 @@ struct search_applications: View {
             ZStack {
             VStack(spacing:0) {
                 ScrollView(showsIndicators: true) {
-                        LazyVStack {
+                        LazyVStack(spacing: 0) {
                             ForEach(search_results, id:\.trackID) { application in
                                 Button(action:{search_selected_application = application;forward_or_backward = false; withAnimation(.linear(duration: 0.28)) {search_show_application = true}}) {
                                     VStack(spacing: 0) {
@@ -188,8 +188,8 @@ struct search_applications: View {
                                                 Rectangle().foregroundColor(.gray)
                                             }.frame(width:60, height: 60).cornerRadius(60*90/512).padding(.leading, 12).shadow(color: Color.black.opacity(0.55), radius: 0.85, x: 0, y: 1.75)
                                             VStack(alignment: .leading, spacing: 2) {
-                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
-                                                Text(application.trackName ?? "---").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.trackName ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 HStack(spacing: 2) {
                                                     ForEach(0..<Int(application.averageUserRating)) { _ in
                                                         ZStack {
@@ -202,13 +202,13 @@ struct search_applications: View {
                                                         }
                                                     }.offset(y:4)
                                                     Spacer().frame(width: 2)
-                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 }
                                             }
                                             Spacer()
                                             HStack(spacing: 6) { //Nest in another HStack for variable spacing
                                                 Image("UniversalGlyph").opacity(application.features.contains("iosUniversal") ? 1 : 0).offset(y:1)
-                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 Image("UITableNext")
                                             }.padding(.trailing, 12)
                                         }
@@ -291,7 +291,7 @@ struct app_store_categories: View {
         GeometryReader { geometry in
             VStack(spacing:0) {
                 ScrollView(showsIndicators: true) {
-                    LazyVStack {
+                    LazyVStack(spacing: 0) {
                         ForEach(categories_obs.categories) { category in
                             Button(action:{
                                 selected_category = category; forward_or_backward = false; withAnimation(.linear(duration: 0.28)) {if selected_category.genre_id == category.genre_id {categories_current_view = "Category"}}
@@ -303,7 +303,7 @@ struct app_store_categories: View {
                                             Rectangle().foregroundColor(.gray)
                                         }.frame(width:60, height: 60).cornerRadius(60*90/512).padding(.leading, 12).shadow(color: Color.black.opacity(0.55), radius: 0.85, x: 0, y: 1.75)
                                         VStack(alignment: .leading, spacing: 2) {
-                                            Text(category.name).font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                            Text(category.name).font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                         }
                                         Spacer()
                                         HStack(spacing: 6) { //Nest in another HStack for variable spacing
@@ -318,11 +318,11 @@ struct app_store_categories: View {
                         }
                     }
                     Spacer().frame(height: 20)
-                    Text("Redeem").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 252/255, green: 253/255, blue: 253/255), Color(red: 232/255, green: 235/255, blue: 241/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
+                    Text("Redeem").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 252/255, green: 253/255, blue: 253/255), Color(red: 232/255, green: 235/255, blue: 241/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
                     Spacer().frame(height: 10)
-                    Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 252/255, green: 253/255, blue: 253/255), Color(red: 232/255, green: 235/255, blue: 241/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
+                    Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 252/255, green: 253/255, blue: 253/255), Color(red: 232/255, green: 235/255, blue: 241/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
                     Spacer().frame(height: 30)
-                    Text("Apple Media Services Terms and\nConditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 48/255, green: 57/255, blue: 70/255)).font(.custom("Helvetica Neue Bold", size: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
+                    Text("Apple Media Services Terms and\nConditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 48/255, green: 57/255, blue: 70/255)).font(.custom("Helvetica Neue Bold", fixedSize: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
                 }
             }.onAppear() {
                 for category in categories_obs.categories {
@@ -378,7 +378,7 @@ struct category_destination: View {
                 }
                 ScrollView(showsIndicators: true) {
                     if selected_segment_25 == 0 {
-                        LazyVStack {
+                        LazyVStack(spacing: 0) {
                             if top_paid_applications.isEmpty {
                                 Spacer().frame(height:geometry.size.height)
                             } else {
@@ -391,8 +391,8 @@ struct category_destination: View {
                                                 Rectangle().foregroundColor(.gray)
                                             }.frame(width:60, height: 60).cornerRadius(60*90/512).padding(.leading, 12).shadow(color: Color.black.opacity(0.55), radius: 0.85, x: 0, y: 1.75)
                                             VStack(alignment: .leading, spacing: 2) {
-                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
-                                                Text("\(Int((top_paid_applications.firstIndex(where: {$0.id == application.id}) ?? 0) + 1)). \(application.trackName ?? "---")").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text("\(Int((top_paid_applications.firstIndex(where: {$0.id == application.id}) ?? 0) + 1)). \(application.trackName ?? "---")").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 HStack(spacing: 2) {
                                                     ForEach(0..<Int(application.averageUserRating)) { _ in
                                                         ZStack {
@@ -405,13 +405,13 @@ struct category_destination: View {
                                                         }
                                                     }.offset(y:4)
                                                     Spacer().frame(width: 2)
-                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 }
                                             }
                                             Spacer()
                                             HStack(spacing: 6) { //Nest in another HStack for variable spacing
                                                 Image("UniversalGlyph").opacity(application.features.contains("iosUniversal") ? 1 : 0).offset(y:1)
-                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 Image("UITableNext")
                                             }.padding(.trailing, 12)
                                         }
@@ -423,11 +423,11 @@ struct category_destination: View {
                             }
                         }
                         Spacer().frame(height: 20)
-                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 226/255, green: 225/255, blue: 225/255), Color(red: 185/255, green: 185/255, blue: 185/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
+                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 226/255, green: 225/255, blue: 225/255), Color(red: 185/255, green: 185/255, blue: 185/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
                         Spacer().frame(height: 30)
-                        Text("iTunes Store Terms and Conditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 40/255, green: 50/255, blue: 56/255)).font(.custom("Helvetica Neue Bold", size: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
+                        Text("iTunes Store Terms and Conditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 40/255, green: 50/255, blue: 56/255)).font(.custom("Helvetica Neue Bold", fixedSize: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
                         } } else if selected_segment_25 == 1 {
-                        LazyVStack {
+                        LazyVStack(spacing: 0) {
                             if top_free_applications.isEmpty {
                                 Spacer().frame(height:geometry.size.height)
                             } else {
@@ -440,8 +440,8 @@ struct category_destination: View {
                                                 Rectangle().foregroundColor(.gray)
                                             }.frame(width:60, height: 60).cornerRadius(60*90/512).padding(.leading, 12).shadow(color: Color.black.opacity(0.55), radius: 0.85, x: 0, y: 1.75)
                                             VStack(alignment: .leading, spacing: 2) {
-                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
-                                                Text("\(Int((top_free_applications.firstIndex(where: {$0.id == application.id}) ?? 0) + 1)). \(application.trackName ?? "---")").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text("\(Int((top_free_applications.firstIndex(where: {$0.id == application.id}) ?? 0) + 1)). \(application.trackName ?? "---")").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 HStack(spacing: 2) {
                                                     ForEach(0..<Int(application.averageUserRating)) { _ in
                                                         ZStack {
@@ -454,13 +454,13 @@ struct category_destination: View {
                                                         }
                                                     }.offset(y:4)
                                                     Spacer().frame(width: 2)
-                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 }
                                             }
                                             Spacer()
                                             HStack(spacing: 6) { //Nest in another HStack for variable spacing
                                                 Image("UniversalGlyph").opacity(application.features.contains("iosUniversal") ? 1 : 0).offset(y:1)
-                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 Image("UITableNext")
                                             }.padding(.trailing, 12)
                                         }
@@ -472,11 +472,11 @@ struct category_destination: View {
                             }
                         }
                         Spacer().frame(height: 20)
-                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 226/255, green: 225/255, blue: 225/255), Color(red: 185/255, green: 185/255, blue: 185/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
+                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 226/255, green: 225/255, blue: 225/255), Color(red: 185/255, green: 185/255, blue: 185/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
                         Spacer().frame(height: 30)
-                        Text("iTunes Store Terms and Conditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 40/255, green: 50/255, blue: 56/255)).font(.custom("Helvetica Neue Bold", size: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
+                        Text("iTunes Store Terms and Conditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 40/255, green: 50/255, blue: 56/255)).font(.custom("Helvetica Neue Bold", fixedSize: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
                         } }else if selected_segment_25 == 2 {
-                        LazyVStack {
+                        LazyVStack(spacing: 0) {
                             if new_applications.isEmpty {
                                 Spacer().frame(height:geometry.size.height)
                             } else {
@@ -489,8 +489,8 @@ struct category_destination: View {
                                                 Rectangle().foregroundColor(.gray)
                                             }.frame(width:60, height: 60).cornerRadius(60*90/512).padding(.leading, 12).shadow(color: Color.black.opacity(0.55), radius: 0.85, x: 0, y: 1.75)
                                             VStack(alignment: .leading, spacing: 2) {
-                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
-                                                Text("\(Int((new_applications.firstIndex(where: {$0.id == application.id}) ?? 0) + 1)). \(application.trackName ?? "---")").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text("\(Int((new_applications.firstIndex(where: {$0.id == application.id}) ?? 0) + 1)). \(application.trackName ?? "---")").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 HStack(spacing: 2) {
                                                     ForEach(0..<Int(application.averageUserRating)) { _ in
                                                         ZStack {
@@ -503,13 +503,13 @@ struct category_destination: View {
                                                         }
                                                     }.offset(y:4)
                                                     Spacer().frame(width: 2)
-                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 }
                                             }
                                             Spacer()
                                             HStack(spacing: 6) { //Nest in another HStack for variable spacing
                                                 Image("UniversalGlyph").opacity(application.features.contains("iosUniversal") ? 1 : 0).offset(y:1)
-                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 Image("UITableNext")
                                             }.padding(.trailing, 12)
                                         }
@@ -521,9 +521,9 @@ struct category_destination: View {
                             }
                         }
                         Spacer().frame(height: 20)
-                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 226/255, green: 225/255, blue: 225/255), Color(red: 185/255, green: 185/255, blue: 185/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
+                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 226/255, green: 225/255, blue: 225/255), Color(red: 185/255, green: 185/255, blue: 185/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
                         Spacer().frame(height: 30)
-                        Text("iTunes Store Terms and Conditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 40/255, green: 50/255, blue: 56/255)).font(.custom("Helvetica Neue Bold", size: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
+                        Text("iTunes Store Terms and Conditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 40/255, green: 50/255, blue: 56/255)).font(.custom("Helvetica Neue Bold", fixedSize: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
                         }
                     }
                 }
@@ -615,7 +615,7 @@ struct top_25_applications: View {
             VStack(spacing:0) {
                 ScrollView(showsIndicators: true) {
                     if selected_segment_25 == 0 {
-                        LazyVStack {
+                        LazyVStack(spacing: 0) {
                             if top_paid_and_free_observer.top_paid_applications.isEmpty {
                                 Spacer().frame(height:geometry.size.height)
                             } else {
@@ -628,8 +628,8 @@ struct top_25_applications: View {
                                                 Rectangle().foregroundColor(.gray)
                                             }.frame(width:60, height: 60).cornerRadius(60*90/512).padding(.leading, 12).shadow(color: Color.black.opacity(0.55), radius: 0.85, x: 0, y: 1.75)
                                             VStack(alignment: .leading, spacing: 2) {
-                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
-                                                Text("\(Int((top_paid_and_free_observer.top_paid_applications.firstIndex(where: {$0.id == application.id}) ?? 0) + 1)). \(application.trackName ?? "---")").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text("\(Int((top_paid_and_free_observer.top_paid_applications.firstIndex(where: {$0.id == application.id}) ?? 0) + 1)). \(application.trackName ?? "---")").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 HStack(spacing: 2) {
                                                     ForEach(0..<Int(application.averageUserRating)) { _ in
                                                         ZStack {
@@ -642,13 +642,13 @@ struct top_25_applications: View {
                                                         }
                                                     }.offset(y:4)
                                                     Spacer().frame(width: 2)
-                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 }
                                             }
                                             Spacer()
                                             HStack(spacing: 6) { //Nest in another HStack for variable spacing
                                                 Image("UniversalGlyph").opacity(application.features.contains("iosUniversal") ? 1 : 0).offset(y:1)
-                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 Image("UITableNext")
                                             }.padding(.trailing, 12)
                                         }
@@ -660,11 +660,11 @@ struct top_25_applications: View {
                             }
                         }
                         Spacer().frame(height: 20)
-                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 226/255, green: 225/255, blue: 225/255), Color(red: 185/255, green: 185/255, blue: 185/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
+                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 226/255, green: 225/255, blue: 225/255), Color(red: 185/255, green: 185/255, blue: 185/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
                         Spacer().frame(height: 30)
-                        Text("iTunes Store Terms and Conditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 40/255, green: 50/255, blue: 56/255)).font(.custom("Helvetica Neue Bold", size: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
+                        Text("iTunes Store Terms and Conditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 40/255, green: 50/255, blue: 56/255)).font(.custom("Helvetica Neue Bold", fixedSize: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
                         } } else if selected_segment_25 == 1 {
-                        LazyVStack {
+                        LazyVStack(spacing: 0) {
                             if top_paid_and_free_observer.top_free_applications.isEmpty {
                                 Spacer().frame(height:geometry.size.height)
                             } else {
@@ -677,8 +677,8 @@ struct top_25_applications: View {
                                                 Rectangle().foregroundColor(.gray)
                                             }.frame(width:60, height: 60).cornerRadius(60*90/512).padding(.leading, 12).shadow(color: Color.black.opacity(0.55), radius: 0.85, x: 0, y: 1.75)
                                             VStack(alignment: .leading, spacing: 2) {
-                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
-                                                Text("\(Int((top_paid_and_free_observer.top_free_applications.firstIndex(where: {$0.id == application.id}) ?? 0) + 1)). \(application.trackName ?? "---")").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text("\(Int((top_paid_and_free_observer.top_free_applications.firstIndex(where: {$0.id == application.id}) ?? 0) + 1)). \(application.trackName ?? "---")").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 HStack(spacing: 2) {
                                                     ForEach(0..<Int(application.averageUserRating)) { _ in
                                                         ZStack {
@@ -691,13 +691,13 @@ struct top_25_applications: View {
                                                         }
                                                     }.offset(y:4)
                                                     Spacer().frame(width: 2)
-                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 }
                                             }
                                             Spacer()
                                             HStack(spacing: 6) { //Nest in another HStack for variable spacing
                                                 Image("UniversalGlyph").opacity(application.features.contains("iosUniversal") ? 1 : 0).offset(y:1)
-                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 Image("UITableNext")
                                             }.padding(.trailing, 12)
                                         }
@@ -709,11 +709,11 @@ struct top_25_applications: View {
                             }
                         }
                         Spacer().frame(height: 20)
-                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 226/255, green: 225/255, blue: 225/255), Color(red: 185/255, green: 185/255, blue: 185/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
+                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 226/255, green: 225/255, blue: 225/255), Color(red: 185/255, green: 185/255, blue: 185/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
                         Spacer().frame(height: 30)
-                        Text("iTunes Store Terms and Conditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 40/255, green: 50/255, blue: 56/255)).font(.custom("Helvetica Neue Bold", size: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
+                        Text("iTunes Store Terms and Conditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 40/255, green: 50/255, blue: 56/255)).font(.custom("Helvetica Neue Bold", fixedSize: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
                         } } else if selected_segment_25 == 2 {
-                        LazyVStack {
+                        LazyVStack(spacing: 0) {
                             if top_paid_and_free_observer.top_grossing_applications.isEmpty {
                                 Spacer().frame(height:geometry.size.height)
                             } else {
@@ -726,8 +726,8 @@ struct top_25_applications: View {
                                                 Rectangle().foregroundColor(.gray)
                                             }.frame(width:60, height: 60).cornerRadius(60*90/512).padding(.leading, 12).shadow(color: Color.black.opacity(0.55), radius: 0.85, x: 0, y: 1.75)
                                             VStack(alignment: .leading, spacing: 2) {
-                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
-                                                Text("\(Int((top_paid_and_free_observer.top_grossing_applications.firstIndex(where: {$0.id == application.id}) ?? 0) + 1)). \(application.trackName ?? "---")").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text("\(Int((top_paid_and_free_observer.top_grossing_applications.firstIndex(where: {$0.id == application.id}) ?? 0) + 1)). \(application.trackName ?? "---")").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 HStack(spacing: 2) {
                                                     ForEach(0..<Int(application.averageUserRating)) { _ in
                                                         ZStack {
@@ -740,13 +740,13 @@ struct top_25_applications: View {
                                                         }
                                                     }.offset(y:4)
                                                     Spacer().frame(width: 2)
-                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 }
                                             }
                                             Spacer()
                                             HStack(spacing: 6) { //Nest in another HStack for variable spacing
                                                 Image("UniversalGlyph").opacity(application.features.contains("iosUniversal") ? 1 : 0).offset(y:1)
-                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 Image("UITableNext")
                                             }.padding(.trailing, 12)
                                         }
@@ -758,9 +758,9 @@ struct top_25_applications: View {
                             }
                         }
                         Spacer().frame(height: 20)
-                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 226/255, green: 225/255, blue: 225/255), Color(red: 185/255, green: 185/255, blue: 185/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
+                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 226/255, green: 225/255, blue: 225/255), Color(red: 185/255, green: 185/255, blue: 185/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
                         Spacer().frame(height: 30)
-                        Text("iTunes Store Terms and Conditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 40/255, green: 50/255, blue: 56/255)).font(.custom("Helvetica Neue Bold", size: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
+                        Text("iTunes Store Terms and Conditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 40/255, green: 50/255, blue: 56/255)).font(.custom("Helvetica Neue Bold", fixedSize: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
                         } }
                 }
             }
@@ -797,10 +797,10 @@ struct app_destination: View {
                                     }.frame(width:60, height: 60).cornerRadius(60*90/512).padding(.leading, 12).shadow(color: Color.black.opacity(0.55), radius: 0.85, x: 0, y: 1.75)
                                 }.frame(height:90).clipped().offset(y:-1)
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(featured_selected_application?.trackName ?? "---").font(.custom("Helvetica Neue Bold", size: 20)).foregroundColor(.black).lineLimit(0).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                    Text(featured_selected_application?.trackName ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 20)).foregroundColor(.black).lineLimit(0).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                     HStack {
                                         VStack(alignment: .leading, spacing: 2) {
-                                            Text(featured_selected_application?.artistName ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(0).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                            Text(featured_selected_application?.artistName ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(0).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                             HStack(spacing: 2) {
                                                 ForEach(0..<Int(featured_selected_application?.averageUserRating ?? 4)) { _ in
                                                     ZStack {
@@ -813,7 +813,7 @@ struct app_destination: View {
                                                     }
                                                 }.offset(y:4)
                                                 Spacer().frame(width: 2)
-                                                Text("\(String(featured_selected_application?.userRatingCount ?? 0).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1)
+                                                Text("\(String(featured_selected_application?.userRatingCount ?? 0).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1)
                                             }
                                         }
                                         Spacer()
@@ -822,14 +822,14 @@ struct app_destination: View {
                                             if let url = URL(string: "itms-apps://apple.com/app/id\(id)") {
                                                 UIApplication.shared.open(url)
                                             }
-                                        }, button_type: .app_store, content: "  \(featured_selected_application?.formattedPrice ?? "")  ", height_modifier: -5, radius: 3.5).textCase(.uppercase).padding(.trailing, 4)
+                                        }, button_type: .app_store, content: "\(featured_selected_application?.formattedPrice ?? "")  ", height_modifier: -5, radius: 3.5).textCase(.uppercase).padding(.trailing, 4)
                                     }
                                 }.frame(height:90)
                                 Spacer()
                             }
                         }
                         Spacer().frame(height: 10)
-                        Text( featured_selected_application?.description ?? "").font(.custom("Helvetica Neue Regular", size: 12)).frame(width: geometry.size.width-24)
+                        Text( featured_selected_application?.description ?? "").font(.custom("Helvetica Neue Regular", fixedSize: 12)).frame(width: geometry.size.width-24)
                         Pager(page: page, data: featured_selected_application?.screenshotUrls ?? [], id: \.self) { url in
                             WebImage(url: url).resizable().scaledToFit().border(Color.white.opacity(0.85), width: 1).shadow(color: Color.black.opacity(0.4), radius: 2.5, x: 0, y: 1).padding(.bottom, 10)
                         }.multiplePagination() .preferredItemSize(CGSize(width: geometry.size.width-80, height: geometry.size.height - 60)) .itemSpacing(2.5).frame(width: geometry.size.width, height:geometry.size.height).background(Color(red: 143/255, green: 145/255, blue: 146/255).overlay(LinearGradient([(color: Color(red: 0, green: 0, blue: 0).opacity(0.23), location: 0), (color: Color(red: 0, green: 0, blue: 0).opacity(0.0), location: 0.015), (color: Color(red: 0, green: 0, blue: 0).opacity(0.0), location: 0.985), (color: Color(red: 0, green: 0, blue: 0).opacity(0.23), location: 1)], from: .top, to: .bottom))).overlay(VStack {
@@ -843,7 +843,7 @@ struct app_destination: View {
                             }.animationsDisabled().padding(.bottom, 17.5)
                         })
                         HStack {
-                            Text("\(String(featured_selected_application?.userRatingCount ?? 0).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.black).lineLimit(1).padding(.leading, 12)
+                            Text("\(String(featured_selected_application?.userRatingCount ?? 0).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.black).lineLimit(1).padding(.leading, 12)
                             HStack(spacing: 2) {
                                 ForEach(0..<Int(featured_selected_application?.averageUserRating ?? 4)) { _ in
                                     ZStack {
@@ -861,20 +861,20 @@ struct app_destination: View {
                         }.frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 252/255, green: 253/255, blue: 253/255), Color(red: 232/255, green: 235/255, blue: 241/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0).cornerRadius(9).strokeRoundedRectangle(9, Color.white, lineWidth: 0.5)
                         HStack(spacing: 0) {
                             ZStack {
-                                Text("Tell a Friend").font(.custom("Helvetica Neue Bold", size: 15))
+                                Text("Tell a Friend").font(.custom("Helvetica Neue Bold", fixedSize: 15))
                             }.frame(width: geometry.size.width/2 - 18, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 252/255, green: 253/255, blue: 253/255), Color(red: 232/255, green: 235/255, blue: 241/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0).cornerRadius(9).strokeRoundedRectangle(9, Color.white, lineWidth: 0.5)
                             Spacer()
                             ZStack {
-                                Text("App Support").font(.custom("Helvetica Neue Bold", size: 15))
+                                Text("App Support").font(.custom("Helvetica Neue Bold", fixedSize: 15))
                             }.frame(width: geometry.size.width/2 - 18, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 252/255, green: 253/255, blue: 253/255), Color(red: 232/255, green: 235/255, blue: 241/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0).cornerRadius(9).strokeRoundedRectangle(9, Color.white, lineWidth: 0.5)
                         }.padding([.leading, .trailing], 12)
                         Spacer().frame(height: 20)
                         HStack(alignment: .top, spacing: 10) {
                             HStack(alignment: .top, spacing: 0) {
                                 Spacer()
-                                Text("Company").multilineTextAlignment(.trailing).font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 100/255, green: 101/255, blue: 102/255))
+                                Text("Company").multilineTextAlignment(.trailing).font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 100/255, green: 101/255, blue: 102/255))
                             }.frame(width: geometry.size.width/3)
-                            Text("\(featured_selected_application?.sellerName ?? "")\n\(featured_selected_application?.sellerURL?.relativeString ?? "")").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(.black)
+                            Text("\(featured_selected_application?.sellerName ?? "")\n\(featured_selected_application?.sellerURL?.relativeString ?? "")").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(.black)
                             Spacer()
                         }
                         VStack {
@@ -882,37 +882,37 @@ struct app_destination: View {
                             HStack(alignment: .top) {
                                 HStack(alignment: .top, spacing: 0) {
                                     Spacer()
-                                    Text("Updated").multilineTextAlignment(.trailing).font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 100/255, green: 101/255, blue: 102/255))
+                                    Text("Updated").multilineTextAlignment(.trailing).font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 100/255, green: 101/255, blue: 102/255))
                                 }.frame(width: geometry.size.width/3)
-                                Text("\(format_iso_date(featured_selected_application?.currentVersionReleaseDate ?? ""))").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(.black)//fix to formated current release version
+                                Text("\(format_iso_date(featured_selected_application?.currentVersionReleaseDate ?? ""))").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(.black)//fix to formated current release version
                                 Spacer()
                             }
                             HStack(alignment: .top) {
                                 HStack(alignment: .top, spacing: 0) {
                                     Spacer()
-                                    Text("Version").multilineTextAlignment(.trailing).font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 100/255, green: 101/255, blue: 102/255))
+                                    Text("Version").multilineTextAlignment(.trailing).font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 100/255, green: 101/255, blue: 102/255))
                                 }.frame(width: geometry.size.width/3)
-                                Text("\(featured_selected_application?.version ?? "")").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(.black)
+                                Text("\(featured_selected_application?.version ?? "")").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(.black)
                                 Spacer()
                             }
                             HStack(alignment: .top) {
                                 HStack(alignment: .top, spacing: 0) {
                                     Spacer()
-                                    Text("Size").multilineTextAlignment(.trailing).font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 100/255, green: 101/255, blue: 102/255))
+                                    Text("Size").multilineTextAlignment(.trailing).font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 100/255, green: 101/255, blue: 102/255))
                                 }.frame(width: geometry.size.width/3)
-                                Text("\(String(format:"%.1f", Double((Double(featured_selected_application?.fileSizeBytes ?? "0") ?? 0)/1000000))) MB").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(.black)
+                                Text("\(String(format:"%.1f", Double((Double(featured_selected_application?.fileSizeBytes ?? "0") ?? 0)/1000000))) MB").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(.black)
                                 Spacer()
                             }
                             Spacer().frame(height: 10)
                             HStack(alignment: .top) {
                                 HStack(alignment: .top, spacing: 0) {
                                     Spacer()
-                                    Text("Rating").multilineTextAlignment(.trailing).font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 100/255, green: 101/255, blue: 102/255))
+                                    Text("Rating").multilineTextAlignment(.trailing).font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 100/255, green: 101/255, blue: 102/255))
                                 }.frame(width: geometry.size.width/3)
                                 VStack(alignment: .leading) {
-                                    Text((featured_selected_application?.advisories ?? [] == []) ? "\(featured_selected_application?.contentAdvisoryRating ?? "")" : "Rated \(featured_selected_application?.contentAdvisoryRating ?? "") for the following:").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(.black)
+                                    Text((featured_selected_application?.advisories ?? [] == []) ? "\(featured_selected_application?.contentAdvisoryRating ?? "")" : "Rated \(featured_selected_application?.contentAdvisoryRating ?? "") for the following:").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(.black)
                                     ForEach(featured_selected_application?.advisories ?? [], id: \.self) { advisory in
-                                        Text("\(advisory ?? "")").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(.black).fixedSize(horizontal: false, vertical: true)
+                                        Text("\(advisory ?? "")").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(.black).fixedSize(horizontal: false, vertical: true)
                                     }
                                 }
                                 Spacer()
@@ -939,7 +939,7 @@ struct featured_applications: View {
             VStack(spacing:0) {
                 ScrollView(showsIndicators: true) {
                     if selected_segment == 0 {
-                        LazyVStack {
+                        LazyVStack(spacing: 0) {
                             if featured_observer.featured_applications.isEmpty {
                                 Spacer().frame(height:geometry.size.height)
                             } else {
@@ -952,8 +952,8 @@ struct featured_applications: View {
                                                 Rectangle().foregroundColor(.gray)
                                             }.frame(width:60, height: 60).cornerRadius(60*90/512).padding(.leading, 12).shadow(color: Color.black.opacity(0.55), radius: 0.85, x: 0, y: 1.75)
                                             VStack(alignment: .leading, spacing: 2) {
-                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
-                                                Text(application.trackName ?? "---").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.artistName ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.trackName ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 HStack(spacing: 2) {
                                                     ForEach(0..<Int(application.averageUserRating)) { _ in
                                                         ZStack {
@@ -966,13 +966,13 @@ struct featured_applications: View {
                                                         }
                                                     }.offset(y:4)
                                                     Spacer().frame(width: 2)
-                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", size: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                    Text("\(String(application.userRatingCount).filter("0123456789.".contains)) Ratings").font(.custom("Helvetica Neue Regular", fixedSize: 12)).foregroundColor(Color(red: 58/255, green: 58/255, blue: 58/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 }
                                             }
                                             Spacer()
                                             HStack(spacing: 6) { //Nest in another HStack for variable spacing
                                                 Image("UniversalGlyph").opacity(application.features.contains("iosUniversal") ? 1 : 0).offset(y:1)
-                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", size: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                                                Text(application.formattedPrice ?? "---").font(.custom("Helvetica Neue Bold", fixedSize: 12)).textCase(.uppercase).foregroundColor(Color(red: 74/255, green: 74/255, blue: 74/255)).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                                                 Image("UITableNext")
                                             }.padding(.trailing, 12)
                                         }
@@ -984,19 +984,19 @@ struct featured_applications: View {
                             }
                         }
                         Spacer().frame(height: 20)
-                        Text("Redeem").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 252/255, green: 253/255, blue: 253/255), Color(red: 232/255, green: 235/255, blue: 241/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
+                        Text("Redeem").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 252/255, green: 253/255, blue: 253/255), Color(red: 232/255, green: 235/255, blue: 241/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
                         Spacer().frame(height: 10)
-                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 252/255, green: 253/255, blue: 253/255), Color(red: 232/255, green: 235/255, blue: 241/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
+                        Text("Apple ID: OldOS@mac.com").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.black).lineLimit(1).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9).frame(width: geometry.size.width - 24, height: 50).ps_innerShadow(.roundedRectangle(9, LinearGradient([Color(red: 252/255, green: 253/255, blue: 253/255), Color(red: 232/255, green: 235/255, blue: 241/255)], from: .top, to: .bottom)), radius:5/3, offset: CGPoint(0, 1/3), intensity: 0.5).cornerRadius(9).strokeRoundedRectangle(9, Color(red: 133/255, green: 133/255, blue: 135/255), lineWidth: 0.5)
                         Spacer().frame(height: 30)
-                        Text("Apple Media Services Terms and\nConditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 48/255, green: 57/255, blue: 70/255)).font(.custom("Helvetica Neue Bold", size: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
+                        Text("Apple Media Services Terms and\nConditions...").multilineTextAlignment(.center).foregroundColor(Color(red: 48/255, green: 57/255, blue: 70/255)).font(.custom("Helvetica Neue Bold", fixedSize: 14)).shadow(color: Color.white.opacity(0.7), radius: 0, x: 0.0, y: 0.9).padding(.bottom, 30)
                         } } else {
                         VStack {
                             Spacer()
                             Image("geniusatom").resizable().scaledToFit().frame(width: 70)
                             Spacer().frame(height: 15)
-                            Text("You do not currently have any\nrecommendations.").multilineTextAlignment(.center).font(.custom("Helvetica Neue Bold", size: 17)).foregroundColor(.black).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                            Text("You do not currently have any\nrecommendations.").multilineTextAlignment(.center).font(.custom("Helvetica Neue Bold", fixedSize: 17)).foregroundColor(.black).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                             Spacer().frame(height: 25)
-                            Text("To start seeing recommendations,\nteach Genius about your tastes by\ndownloading apps.").multilineTextAlignment(.center).font(.custom("Helvetica Neue Regular", size: 17)).foregroundColor(Color(red: 100/255, green: 101/255, blue: 102/255)).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
+                            Text("To start seeing recommendations,\nteach Genius about your tastes by\ndownloading apps.").multilineTextAlignment(.center).font(.custom("Helvetica Neue Regular", fixedSize: 17)).foregroundColor(Color(red: 100/255, green: 101/255, blue: 102/255)).shadow(color: Color.white.opacity(0.4), radius: 0, x: 0.0, y: 0.9)
                             Spacer()
                         }.frame(width: geometry.size.width, height: geometry.size.height).background(LinearGradient(gradient: Gradient(stops: [.init(color: Color.white, location: 0), .init(color: Color(red: 200/255, green: 202/255, blue: 204/255), location: 1)]), startPoint: .top, endPoint: .bottom))
                     }
@@ -1016,7 +1016,7 @@ class TopPaidAndFreeApplicationsObserver: ObservableObject { //<-
     func parse_data() {
         print("parsing data")
         //Top Free
-        let free_url = URL(string: "https://rss.itunes.apple.com/api/v1/us/ios-apps/top-free/all/25/explicit.rss?at=10laCr")!
+        let free_url = URL(string: "https://rss.applemarketingtools.com/api/v2/us/apps/top-free/25/apps.rss")!
         let free_parser = FeedParser(URL: free_url)
         free_parser.parseAsync(queue: DispatchQueue.global(qos: .userInitiated)) { (result) in
             DispatchQueue.main.async {
@@ -1039,7 +1039,7 @@ class TopPaidAndFreeApplicationsObserver: ObservableObject { //<-
             }
         }
         //Top Paid
-        let paid_url = URL(string: "https://rss.itunes.apple.com/api/v1/us/ios-apps/top-paid/all/25/explicit.rss?at=10laCr")!
+        let paid_url = URL(string: "https://rss.applemarketingtools.com/api/v2/us/apps/top-paid/25/apps.rss")!
         let paid_parser = FeedParser(URL: paid_url)
         paid_parser.parseAsync(queue: DispatchQueue.global(qos: .userInitiated)) { (result) in
             DispatchQueue.main.async {
@@ -1062,15 +1062,15 @@ class TopPaidAndFreeApplicationsObserver: ObservableObject { //<-
             }
         }
         //Top Grossing
-        let grossing_url = URL(string: "https://rss.itunes.apple.com/api/v1/us/ios-apps/top-grossing/all/25/explicit.rss?at=10laCr")!
+        let grossing_url = URL(string: "https://itunes.apple.com/us/rss/topgrossingapplications/limit=25/xml")!
         let grossing_parser = FeedParser(URL: grossing_url)
         grossing_parser.parseAsync(queue: DispatchQueue.global(qos: .userInitiated)) { (result) in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let feed):
-                    let rssFeed = feed.rssFeed
-                    for item in rssFeed?.items ?? [] {
-                        fetch_application_data(item, completion: { result in
+                    let rssFeed = feed.atomFeed
+                    for item in rssFeed?.entries ?? [] {
+                        fetch_application_data_atom(item, completion: { result in
                             DispatchQueue.main.async {
                                 
                                 self.top_grossing_applications.append(result)
@@ -1092,6 +1092,8 @@ class TopPaidAndFreeApplicationsObserver: ObservableObject { //<-
 
 //Until the Apple RSS feed is back up and running, we will use a feed stored on the Internet Archive.
 //EDIT as of 3/19 this is live again, who knows what the deal was, but keep an eye out for if it stops working.
+//EDIT as of 6/28/25 the old Apple marketing tools RSS feeds have been taken down. Luckily, the iTunes feeds are still live. Woohoo! The only change is the feed type is atom...good thing we were smart (or perhaps not smart) coders 4 years ago and already have everything built out to handle that
+//https://web.archive.org/web/20130707162817/itunes.apple.com/us/rss/ This archive link comes in very handy for this
 class FeaturedApplicationsObserver: ObservableObject {
     @Published var featured_applications = [Application_Data.Results]()
     
@@ -1099,16 +1101,16 @@ class FeaturedApplicationsObserver: ObservableObject {
         parse_data()
     }
     func parse_data() {
-        print("parsing data")
-        let url = URL(string: "https://rss.itunes.apple.com/api/v1/us/ios-apps/new-apps-we-love/all/25/explicit.rss?at=10laCr")! //If it continues to not work switch to 10
+        print("parsing data Featured")
+        let url = URL(string: "https://itunes.apple.com/us/rss/newapplications/limit=25/xml")! //If it continues to not work switch to 10
         let parser = FeedParser(URL: url)
         parser.parseAsync(queue: DispatchQueue.global(qos: .userInitiated)) { (result) in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let feed):
-                    let rssFeed = feed.rssFeed
-                    for item in rssFeed?.items ?? [] {
-                        fetch_application_data(item, completion: { result in
+                    let rssFeed = feed.atomFeed
+                    for item in rssFeed?.entries ?? [] {
+                        fetch_application_data_atom(item, completion: { result in
                             DispatchQueue.main.async {
                                 
                                 self.featured_applications.append(result)
@@ -1350,7 +1352,7 @@ struct app_store_title_bar : View {
                     HStack {
                         Spacer()
                         if (selectedTab != "Featured" || featured_show_application == true) && (selectedTab != "Top 25" || top25_show_application == true) && (selectedTab != "Search" || search_show_application == true) {
-                            Text(title).ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", size: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1).transition(AnyTransition.asymmetric(insertion: .move(edge:forward_or_backward == false ? .trailing : .leading), removal: .move(edge:forward_or_backward == false ? .leading : .trailing)).combined(with: .opacity)).id(title).frame(maxWidth: (selectedTab == "Categories" && categories_current_view == "Category") ? 175 : .infinity)
+                            Text(title).ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", fixedSize: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1).transition(AnyTransition.asymmetric(insertion: .move(edge:forward_or_backward == false ? .trailing : .leading), removal: .move(edge:forward_or_backward == false ? .leading : .trailing)).combined(with: .opacity)).id(title).frame(maxWidth: (selectedTab == "Categories" && categories_current_view == "Category") ? 175 : .infinity)
                         } else if selectedTab == "Featured" {
                             dual_segmented_control(selected: $selected_segment, instant_multitasking_change: $instant_multitasking_change, first_text: "New", second_text: "Genius", should_animate: false).frame(width: 220, height: 30)
                         } else if selectedTab == "Top 25" {
@@ -1444,7 +1446,7 @@ struct app_store_title_bar : View {
                                 ZStack {
                                     Image("Button_wp4").resizable().aspectRatio(contentMode: .fit).frame(width:84, height: 34.33783783783784)
                                     HStack(alignment: .center) {
-                                        Text("App Store").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", size: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1).offset(x: 1)
+                                        Text("App Store").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", fixedSize: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1).offset(x: 1)
                                     }
                                 }.padding(.leading, 6)
                             }.transition(AnyTransition.asymmetric(insertion: .move(edge:.trailing), removal: .move(edge: .trailing)))
@@ -1464,7 +1466,7 @@ struct app_store_title_bar : View {
                                 ZStack {
                                     Image("Button2").resizable().aspectRatio(contentMode: .fit).frame(width:77)
                                     HStack(alignment: .center) {
-                                        Text("Top 25").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", size: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1)
+                                        Text("Top 25").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", fixedSize: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1)
                                     }
                                 }.padding(.leading, 6)
                             }.transition(AnyTransition.asymmetric(insertion: .move(edge:.trailing), removal: .move(edge: .trailing)))
@@ -1485,7 +1487,7 @@ struct app_store_title_bar : View {
                                 ZStack {
                                     Image("Button_wp4").resizable().aspectRatio(contentMode: .fit).frame(width:84, height: 34.33783783783784)
                                     HStack(alignment: .center) {
-                                        Text("Categories").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", size: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1).offset(x: 1)
+                                        Text("Categories").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", fixedSize: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1).offset(x: 1)
                                     }
                                 }.padding(.leading, 6)
                             }.transition(AnyTransition.asymmetric(insertion: .move(edge:.trailing), removal: .move(edge: .trailing)))
@@ -1506,7 +1508,7 @@ struct app_store_title_bar : View {
                                 ZStack {
                                     Image("Button2").resizable().aspectRatio(contentMode: .fit).frame(width:77)
                                     HStack(alignment: .center) {
-                                        Text("Search").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", size: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1)
+                                        Text("Search").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", fixedSize: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1)
                                     }
                                 }.padding(.leading, 6)
                             }.transition(AnyTransition.asymmetric(insertion: .move(edge:.trailing), removal: .move(edge: .trailing)))
@@ -1571,7 +1573,7 @@ struct TabButton_AppStore : View {
                             if image != "Categories" {
                                 Spacer()
                             }
-                            Text(image).foregroundColor(.white).font(.custom("Helvetica Neue Bold", size: 11))
+                            Text(image).foregroundColor(.white).font(.custom("Helvetica Neue Bold", fixedSize: 11))
                             if image != "Categories" {
                                 Spacer()
                             }
@@ -1587,7 +1589,7 @@ struct TabButton_AppStore : View {
                             if image != "Categories" {
                                 Spacer()
                             }
-                            Text(image).foregroundColor(Color(red: 168/255, green: 168/255, blue: 168/255)).font(.custom("Helvetica Neue Bold", size: 11))
+                            Text(image).foregroundColor(Color(red: 168/255, green: 168/255, blue: 168/255)).font(.custom("Helvetica Neue Bold", fixedSize: 11))
                             if image != "Categories" {
                                 Spacer()
                             }

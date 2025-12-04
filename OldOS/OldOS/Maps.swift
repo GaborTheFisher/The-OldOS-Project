@@ -30,9 +30,12 @@ struct Maps: View {
     @ObservedObject var mapType: map_type_observer = map_type_observer()
     @ObservedObject var locationProvider : LocationProvider
     @Binding var instant_multitasking_change: Bool
-    
-    init(instant_multitasking_change: Binding<Bool>) {
+    @Binding var show_multitasking: Bool
+    var should_show: Bool
+    init(instant_multitasking_change: Binding<Bool>, show_multitasking: Binding<Bool>, should_show: Bool) {
         _instant_multitasking_change = instant_multitasking_change
+        _show_multitasking = show_multitasking
+        self.should_show = should_show
         locationProvider = LocationProvider()
         do {try locationProvider.start()}
         catch {
@@ -167,7 +170,7 @@ struct Maps: View {
             } else {
                 mapView.remove_legal_view()
             }
-        })
+        }).shadow(color: Color.black.opacity((instant_multitasking_change == true && should_show == true) ? 0.85 : 0), radius: 6, x: 0, y: 4).disabled((show_multitasking == true && should_show == true))
     }
     
     func easy_int_to_transport(_ val:Int) -> MKDirectionsTransportType {
@@ -233,7 +236,7 @@ struct maps_callout_view: View {
                 Image("UICalloutViewRightCap").frame(height: 114/2)
             }
             HStack {
-                Text(text).foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", size: 16))  .shadow(color: Color.black.opacity(0.51), radius: 0, x: 0.0, y: -2/3).lineLimit(0).offset(y: -6.5)
+                Text(text).foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", fixedSize: 16))  .shadow(color: Color.black.opacity(0.51), radius: 0, x: 0.0, y: -2/3).lineLimit(0).offset(y: -6.5)
                 Image("ABTableNextButton").offset(y: -6.5)
             }.padding([.leading, .trailing], 20)
         }.fixedSize(horizontal: true, vertical: false).frame(height: 70)
@@ -253,14 +256,14 @@ struct maps_background: View {
                     Button(action: {}) {
                         ZStack {
                             Image("UITexturedButton").resizable().scaledToFill().frame(width: geometry.size.width - 35, height: 45)
-                            Text("Drop Pin").font(.custom("Helvetica Neue Bold", size: 18)).gradientForeground(colors: [Color(red: 36/255, green: 38/255, blue: 52/255), Color(red: 52/255, green: 55/255, blue: 78/255)], startPoint: .top, endPoint: .bottom).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
+                            Text("Drop Pin").font(.custom("Helvetica Neue Bold", fixedSize: 18)).gradientForeground(colors: [Color(red: 36/255, green: 38/255, blue: 52/255), Color(red: 52/255, green: 55/255, blue: 78/255)], startPoint: .top, endPoint: .bottom).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
                         }
                     }.frame(width: geometry.size.width - 35, height: 45)
                     Spacer().frame(height: 22.5)
                     Button(action: {}) {
                         ZStack {
                             Image("UITexturedButton").resizable().scaledToFill().frame(width: geometry.size.width - 35, height: 45)
-                            Text("Show Traffic").font(.custom("Helvetica Neue Bold", size: 18)).gradientForeground(colors: [Color(red: 36/255, green: 38/255, blue: 52/255), Color(red: 52/255, green: 55/255, blue: 78/255)], startPoint: .top, endPoint: .bottom).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
+                            Text("Show Traffic").font(.custom("Helvetica Neue Bold", fixedSize: 18)).gradientForeground(colors: [Color(red: 36/255, green: 38/255, blue: 52/255), Color(red: 52/255, green: 55/255, blue: 78/255)], startPoint: .top, endPoint: .bottom).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
                         }
                     }.frame(width: geometry.size.width - 35, height: 45)
                     Spacer().frame(height: 22.5)
@@ -324,7 +327,7 @@ struct selected_textured_segment: View {
                         Image("UISegmentTexturedSelectedDivider").frame(width: 1, height: 49)
                         
                     }
-                    Text(text).font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
+                    Text(text).font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
                 }
             }
         }
@@ -336,7 +339,7 @@ struct selected_textured_segment: View {
                         Image("UISegmentTexturedButtonSelectedLeftCap").frame(width: 18, height: 49.5).rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
                         
                     }
-                    Text(text).font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
+                    Text(text).font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
                 }
             }
         }
@@ -348,7 +351,7 @@ struct selected_textured_segment: View {
                         Image("UISegmentTexturedSelectedDivider").frame(width: 1, height: 49)
                         
                     }
-                    Text(text).font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
+                    Text(text).font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
                 }
             }
         }
@@ -370,7 +373,7 @@ struct unselected_textured_segment: View {
                         Image(options[optional: index + 1] == selected_view ? "UISegmentTexturedSelectedDivider" : "UISegmentTexturedDivider").frame(width: 1, height: 49)
                         
                     }
-                    Text(text).font(.custom("Helvetica Neue Bold", size: 14)).gradientForeground(colors: [Color(red: 36/255, green: 38/255, blue: 52/255), Color(red: 52/255, green: 55/255, blue: 78/255)], startPoint: .top, endPoint: .bottom).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
+                    Text(text).font(.custom("Helvetica Neue Bold", fixedSize: 14)).gradientForeground(colors: [Color(red: 36/255, green: 38/255, blue: 52/255), Color(red: 52/255, green: 55/255, blue: 78/255)], startPoint: .top, endPoint: .bottom).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
                 }
             }
         } else {
@@ -380,7 +383,7 @@ struct unselected_textured_segment: View {
                         Spacer().frame(width: (geometry.size.width - 35 - 3)/4)
                         Image("UISegmentTexturedDivider").frame(width: 1, height: 49).opacity(0)
                     }
-                    Text(text).font(.custom("Helvetica Neue Bold", size: 14)).gradientForeground(colors: [Color(red: 36/255, green: 38/255, blue: 52/255), Color(red: 52/255, green: 55/255, blue: 78/255)], startPoint: .top, endPoint: .bottom).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
+                    Text(text).font(.custom("Helvetica Neue Bold", fixedSize: 14)).gradientForeground(colors: [Color(red: 36/255, green: 38/255, blue: 52/255), Color(red: 52/255, green: 55/255, blue: 78/255)], startPoint: .top, endPoint: .bottom).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
                 }
             }
         }
@@ -395,7 +398,7 @@ struct legal_view: View {
                 Spacer()
             HStack {
                 Spacer()
-                Text("Legal Notices...").underline().foregroundColor(Color(red: 76/255, green: 86/255, blue: 108/255)).font(.custom("Helvetica Neue Bold", size: 14)).shadow(color: Color.white.opacity(0.9), radius: 0, x: 0.0, y: 0.9).padding([.leading, .trailing], 24)
+                Text("Legal Notices...").underline().foregroundColor(Color(red: 76/255, green: 86/255, blue: 108/255)).font(.custom("Helvetica Neue Bold", fixedSize: 14)).shadow(color: Color.white.opacity(0.9), radius: 0, x: 0.0, y: 0.9).padding([.leading, .trailing], 24)
                 Spacer()
             }
                 Spacer()
@@ -811,7 +814,7 @@ struct maps_directions_bar : View {
                                     Spacer(minLength: 5)
                                     HStack (alignment: .center,
                                             spacing: 10) {
-                                        Text("Start:").foregroundColor(Color(red: 143/255, green: 143/255, blue: 143/255)).font(.custom("Helvetica Neue Regular", size: 16))
+                                        Text("Start:").foregroundColor(Color(red: 143/255, green: 143/255, blue: 143/255)).font(.custom("Helvetica Neue Regular", fixedSize: 16))
                                         // .foregroundColor(.gray)
                                         ZStack {
                                         TextField ("Current Location", text: $search, onEditingChanged: { (changed) in
@@ -837,7 +840,7 @@ struct maps_directions_bar : View {
                                         }.keyboardType(.alphabet).disableAutocorrection(true).opacity(0).disabled(true)
                                             //I'm too lazy to figure out the proper size of this text field, so let's just leave it here and avoid any unnecesary calculations that will slow down the rendering of the view.
                                             HStack {
-                                                Text("Current Location").foregroundColor(Color(red: 53/255, green: 86/255, blue: 246/255)).font(.custom("Helvetica Neue Regular", size: 16)).offset(x: -2, y: 0.5)
+                                                Text("Current Location").foregroundColor(Color(red: 53/255, green: 86/255, blue: 246/255)).font(.custom("Helvetica Neue Regular", fixedSize: 16)).offset(x: -2, y: 0.5)
                                                 Spacer()
                                         }
                                         }
@@ -865,7 +868,7 @@ struct maps_directions_bar : View {
                                     Spacer(minLength: 5)
                                     HStack (alignment: .center,
                                             spacing: 10) {
-                                        Text("End:").foregroundColor(Color(red: 143/255, green: 143/255, blue: 143/255)).font(.custom("Helvetica Neue Regular", size: 16))
+                                        Text("End:").foregroundColor(Color(red: 143/255, green: 143/255, blue: 143/255)).font(.custom("Helvetica Neue Regular", fixedSize: 16))
                                         
                                         TextField ("", text: $search, onEditingChanged: { (changed) in
                                             if changed  {
@@ -957,8 +960,8 @@ struct maps_directions_mode_title_bar_footer: View {
                     HStack(spacing: 2) {
                         Spacer()
                         Group {
-                        Text(mapType.distance).font(.custom("Helvetica Neue Bold", size: 16)).foregroundColor(.white)
-                            + Text(" \(mapType.time)").font(.custom("Helvetica Neue Regular", size: 16)).foregroundColor(.white)
+                        Text(mapType.distance).font(.custom("Helvetica Neue Bold", fixedSize: 16)).foregroundColor(.white)
+                            + Text(" \(mapType.time)").font(.custom("Helvetica Neue Regular", fixedSize: 16)).foregroundColor(.white)
                         }.shadow(color: Color.black.opacity(0.61), radius: 0, x: 0.0, y: -1).lineLimit(0)
                         Spacer()
                     }

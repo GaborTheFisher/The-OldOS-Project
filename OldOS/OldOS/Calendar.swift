@@ -14,6 +14,7 @@ struct CalendarView: View {
     @State var forward_or_backward: Bool = false
     @State var show_alert:Bool = false
     @State var increase_brightness: Bool = false
+    @State private var alertTask: Task<Void, Never>?
     var content_header = [list_row(title: "", content: AnyView(calendar_content_hide()))]
     var content_mid = [list_row(title: "", content: AnyView(calendar_content_calendar()))]
     var content_footer = [list_row(title: "", content: AnyView(calendar_content_footer()))]
@@ -30,13 +31,13 @@ struct CalendarView: View {
                             list_section_content_only(current_nav_view: $current_nav_view, forward_or_backward: $forward_or_backward, content:content_header)
                             Spacer().frame(height: 10)
                             HStack {
-                                Text("On My iPhone").foregroundColor(Color(red: 76/255, green: 86/255, blue: 108/255)).font(.custom("Helvetica Neue Bold", size: 17)).shadow(color: Color.white.opacity(0.9), radius: 0, x: 0.0, y: 0.9).padding([.leading, .trailing], 24)
+                                Text("On My iPhone").foregroundColor(Color(red: 76/255, green: 86/255, blue: 108/255)).font(.custom("Helvetica Neue Bold", fixedSize: 17)).shadow(color: Color.white.opacity(0.9), radius: 0, x: 0.0, y: 0.9).padding([.leading, .trailing], 24)
                                 Spacer()
                             }
                             list_section_content_only(current_nav_view: $current_nav_view, forward_or_backward: $forward_or_backward, content:content_mid)
                             Spacer().frame(height: 10)
                             HStack {
-                                Text("Other").foregroundColor(Color(red: 76/255, green: 86/255, blue: 108/255)).font(.custom("Helvetica Neue Bold", size: 17)).shadow(color: Color.white.opacity(0.9), radius: 0, x: 0.0, y: 0.9).padding([.leading, .trailing], 24)
+                                Text("Other").foregroundColor(Color(red: 76/255, green: 86/255, blue: 108/255)).font(.custom("Helvetica Neue Bold", fixedSize: 17)).shadow(color: Color.white.opacity(0.9), radius: 0, x: 0.0, y: 0.9).padding([.leading, .trailing], 24)
                                 Spacer()
                             }
                             list_section_content_only(current_nav_view: $current_nav_view, forward_or_backward: $forward_or_backward, content:content_footer)
@@ -58,14 +59,22 @@ struct CalendarView: View {
             }).compositingGroup().clipped()
         }.onAppear() {
             UIScrollView.appearance().bounces = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            alertTask?.cancel()
+            alertTask = Task<Void, Never> { @MainActor in
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                if Task.isCancelled { return }
+
                 increase_brightness = false
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.55, blendDuration: 0.25)) {
+                withAnimation(.spring(response: 0.3,
+                                       dampingFraction: 0.55,
+                                       blendDuration: 0.25)) {
                     show_alert.toggle()
                 }
             }
         }.onDisappear() {
             UIScrollView.appearance().bounces = false
+            alertTask?.cancel()
+            alertTask = nil
         }
     }
 }
@@ -74,7 +83,7 @@ struct calendar_content_hide: View {
     var body: some View {
         HStack {
            Spacer()
-            Text("Hide All Calendars").font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.black)
+            Text("Hide All Calendars").font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.black)
             Spacer()
         }
     }
@@ -85,7 +94,7 @@ struct calendar_content_calendar: View {
     var body: some View {
         HStack {
             Circle().fill(Color(red: 184/255, green: 154/255, blue: 190/255)).strokeCircle(Color(red: 141/255, green: 98/255, blue: 149/255), lineWidth: 0.75).frame(width: 15, height: 15).padding(.leading, 12)
-            Text("Calendar").font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.black)
+            Text("Calendar").font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.black)
             Spacer()
             Image("UIPreferencesBlueCheck").padding(.trailing, 12)
         }
@@ -96,7 +105,7 @@ struct calendar_content_footer: View {
     var body: some View {
         HStack {
             Image("birthday").padding(.leading, 12)
-            Text("Birthdays").font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.black)
+            Text("Birthdays").font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.black)
             Spacer()
             Image("UIPreferencesBlueCheck").padding(.trailing, 12)
         }

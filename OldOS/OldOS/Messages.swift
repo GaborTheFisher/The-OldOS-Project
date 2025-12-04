@@ -14,6 +14,7 @@ struct Messages: View {
     @State var forward_or_backward: Bool = false
     @State var show_alert:Bool = false
     @State var increase_brightness: Bool = false
+    @State private var alertTask: Task<Void, Never>?
     var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -41,14 +42,22 @@ struct Messages: View {
             })
         }.onAppear() {
             UIScrollView.appearance().bounces = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            alertTask?.cancel()
+            alertTask = Task<Void, Never> { @MainActor in
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                if Task.isCancelled { return }
+
                 increase_brightness = false
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.55, blendDuration: 0.25)) {
+                withAnimation(.spring(response: 0.3,
+                                       dampingFraction: 0.55,
+                                       blendDuration: 0.25)) {
                     show_alert.toggle()
                 }
             }
         }.onDisappear() {
             UIScrollView.appearance().bounces = false
+            alertTask?.cancel()
+            alertTask = nil
         }
     }
 }
@@ -64,7 +73,7 @@ struct messages_title_bar : View {
                 Spacer()
                 HStack {
                     Spacer()
-                    Text(title).ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", size: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1).id(title)
+                    Text(title).ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", fixedSize: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1).id(title)
                     Spacer()
                 }
                 Spacer()

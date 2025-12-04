@@ -17,7 +17,7 @@ struct Stocks: View, Equatable {
     
     @ObservedObject var stocks_observer = StocksObserver()
     @State var items = UserDefaults.standard.object(forKey: "stocks") as? [String]
-    @State var selected_stock: stock?
+    @State var selected_stock: Stock?
     @State var show_settings:Bool = false
     @State var switch_to_settings: Bool = false
     @State var hide_stocks: Bool = false
@@ -42,7 +42,7 @@ struct Stocks: View, Equatable {
                     Spacer().frame(height: 2)
                     stocks_header(stocks_observer: stocks_observer, items: $items, selected_stock: $selected_stock).frame(width: geometry.size.width - 12, height: geometry.size.height*2/3 - 7).cornerRadius(12)
                     Spacer().frame(height: 10)
-                    stocks_footer(show_settings: $show_settings, switch_to_settings: $switch_to_settings, hide_stocks: $hide_stocks, company_name: "\(selected_stock?.current_stock_data.companyName ?? "")", open: "\(selected_stock?.current_stock_data.iexOpen ?? Double(0))", mkt_cap: suffixNumber(number: Double(selected_stock?.current_stock_data.marketCap ?? Int(0)) ?? Double(0)), high: "\(selected_stock?.current_stock_data.high ?? Double(0))", f_high: "\(selected_stock?.current_stock_data.week52High ?? Double(0))", low: "\(selected_stock?.current_stock_data.low ?? Double(0))", f_low: "\(selected_stock?.current_stock_data.week52Low ?? Double(0))", vol: suffixNumber(number: Double(selected_stock?.current_stock_data.volume ?? Int(0)) ?? Double(0)), avg_vol: suffixNumber(number: Double(selected_stock?.current_stock_data.volume ?? Int(0)) ?? Double(0)), pe: "\(selected_stock?.current_stock_data.peRatio ?? Double(0))", yield: "—").frame(width: geometry.size.width - 12, height: geometry.size.height*1/3 - 7).cornerRadius(12)
+                    stocks_footer(show_settings: $show_settings, switch_to_settings: $switch_to_settings, hide_stocks: $hide_stocks, company_name: "\(selected_stock?.current_stock_data.name ?? "")", open: "\(selected_stock?.current_stock_data.open ?? Double(0))", mkt_cap: suffixNumber(number: Double(selected_stock?.current_stock_data.marketCap ?? Double(0))*1000000 ?? Double(0)), high: "\(selected_stock?.current_stock_data.high ?? Double(0))", f_high: "\(selected_stock?.current_stock_data.week52High ?? Double(0))", low: "\(selected_stock?.current_stock_data.low ?? Double(0))", f_low: "\(selected_stock?.current_stock_data.week52Low ?? Double(0))", vol: suffixNumber(number: Double(selected_stock?.current_stock_data.volume ?? Double(Int(0)))*1000000 ?? Double(0)), avg_vol: suffixNumber(number: Double(selected_stock?.current_stock_data.avgVolume ?? Double(Int(0)))*1000000 ?? Double(0)), pe: "\(selected_stock?.current_stock_data.peRatio ?? Double(0))", yield: "\(String(format:" %.2f", (selected_stock?.current_stock_data.dividendYield ?? Double(0))*100))%").frame(width: geometry.size.width - 12, height: geometry.size.height*1/3 - 7).cornerRadius(12)
                     Spacer().frame(height: 2)
                 }.rotation3DEffect(.degrees(switch_to_settings == true ? -90 : 0), axis: (x: 0, y:1, z: 0), anchor: UnitPoint(1, 0.5)).offset(x:switch_to_settings == true ? -geometry.size.width/2 : 0).opacity(switch_to_settings == true ? 0 : 1).isHidden(hide_stocks)
             }
@@ -65,54 +65,107 @@ struct Stocks: View, Equatable {
     }
 }
 
-struct stock: Identifiable, Equatable {
-    let id = UUID()
-    var current_stock_data: CurrentStockData
-    static func == (lhs: stock, rhs: stock) -> Bool {
-        return lhs.id == rhs.id
-    }
+struct CurrentStockData: Codable {
+    let symbol: String?
+    let name: String?
+    let currentPrice: Double?
+    let open: Double?
+    let high: Double?
+    let low: Double?
+    let previousClose: Double?
+    let change: Double?
+    let percentChange: Double?
+    let marketCap: Double?
+    let peRatio: Double?
+    let week52High: Double?
+    let week52Low: Double?
+    let volume: Double?
+    let avgVolume: Double?
+    let dividendYield: Double?
 }
 
 class StocksObserver: ObservableObject {
-    @Published var stocks = [stock]()
+    @Published var stocks = [Stock]()
+
     func fetch_stocks(ticker: String, completion: @escaping (() -> Void)) {
-            self.parse_current_stock_data(ticker: ticker, completion: { current_data in
-                self.stocks.append(stock(current_stock_data: current_data))
-                completion()
-            })
+        self.parse_current_stock_data(ticker: ticker, completion: { current_data in
+            self.stocks.append(Stock(current_stock_data: current_data))
+            completion()
+        })
     }
 
     func parse_current_stock_data(ticker: String, completion: @escaping ((CurrentStockData) -> Void)) {
-        let developed_string = "https://cloud.iexapis.com/stable/stock/\(ticker)/quote?token=pk_5e28c8ffa36d4d3d87d10a5dd9373b9b"
-        let forcast_url = URL(string: developed_string)!
-        let request = URLRequest(url: forcast_url)
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) -> Void in
-            
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            // Parse JSON data
-            if let data = data {
-                let decoder = JSONDecoder()
-                
-                do {
-                    let loanDataStore = try decoder.decode(CurrentStockData.self, from: data)
-                    DispatchQueue.main.async {
-                        completion(loanDataStore)
-                    }
-                    
-                } catch {
-                    print(error)
+        let token = "d1gant9r01qmqatu73hgd1gant9r01qmqatu73i0"
+        let quoteURL = "https://finnhub.io/api/v1/quote?symbol=\(ticker)&token=\(token)"
+        let profileURL = "https://finnhub.io/api/v1/stock/profile2?symbol=\(ticker)&token=\(token)"
+        let metricsURL = "https://finnhub.io/api/v1/stock/metric?symbol=\(ticker)&metric=all&token=\(token)"
+
+        let group = DispatchGroup()
+        var quoteData: [String: Double] = [:]
+        var profileData: [String: Any] = [:]
+        var metricsData: [String: Any] = [:]
+
+        func fetchJSON(urlString: String, completion: @escaping ([String: Any]) -> Void) {
+            guard let url = URL(string: urlString) else { return }
+            URLSession.shared.dataTask(with: url) { data, _, _ in
+                guard let data = data,
+                      let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                    completion([:])
+                    return
                 }
-            }
-        })
-        
-        task.resume()
+                completion(json)
+            }.resume()
+        }
+
+        group.enter()
+        fetchJSON(urlString: quoteURL) { data in
+            quoteData = data as? [String: Double] ?? [:]
+            group.leave()
+        }
+
+        group.enter()
+        fetchJSON(urlString: profileURL) { data in
+            profileData = data
+            group.leave()
+        }
+
+        group.enter()
+        fetchJSON(urlString: metricsURL) { data in
+            metricsData = data["metric"] as? [String: Any] ?? [:]
+            group.leave()
+        }
+
+        group.notify(queue: .main) {
+            let stock = CurrentStockData(
+                symbol: profileData["ticker"] as? String,
+                name: profileData["name"] as? String,
+                currentPrice: quoteData["c"],
+                open: quoteData["o"],
+                high: quoteData["h"],
+                low: quoteData["l"],
+                previousClose: quoteData["pc"],
+                change: quoteData["d"],
+                percentChange: quoteData["dp"],
+                marketCap: profileData["marketCapitalization"] as? Double,
+                peRatio: metricsData["peNormalizedAnnual"] as? Double,
+                week52High: metricsData["52WeekHigh"] as? Double,
+                week52Low: metricsData["52WeekLow"] as? Double,
+                volume: quoteData["v"],
+                avgVolume: metricsData["10DayAverageTradingVolume"] as? Double,
+                dividendYield: metricsData["dividendYieldIndicatedAnnual"] as? Double
+            )
+            completion(stock)
+        }
     }
 }
 
+struct Stock: Identifiable, Equatable {
+    let id = UUID()
+    var current_stock_data: CurrentStockData
+    static func == (lhs: Stock, rhs: Stock) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
 struct stocks_settings_title_bar : View {
     public var done_action: (() -> Void)?
     public var new_action: (() -> Void)?
@@ -124,7 +177,7 @@ struct stocks_settings_title_bar : View {
                 Spacer()
                 HStack {
                     Spacer()
-                    Text("Stocks").ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", size: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1)
+                    Text("Stocks").ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", fixedSize: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1)
                     Spacer()
                 }
                 Spacer()
@@ -181,7 +234,7 @@ struct stocks_settings: View {
                         
                         
                     NoSepratorList_NonLazy {
-                        ForEach(stocks_observer.stocks, id: \.id) { index in
+                        ForEach($stocks_observer.stocks, id: \.id) { index in
                             VStack(alignment: .leading, spacing: 0) {
                                 HStack(alignment: .center) {
                                     Spacer().frame(width:1, height: 44-0.95)
@@ -202,8 +255,8 @@ struct stocks_settings: View {
                                     }.transition(AnyTransition.asymmetric(insertion: .move(edge:.leading), removal: .move(edge:.leading)).combined(with: .opacity)).offset(x:-4)
                                 }
                                     VStack(alignment: .leading, spacing: 1) {
-                                    Text(index.current_stock_data.symbol ?? "").font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.black).lineLimit(1)
-                                        Text(index.current_stock_data.companyName ?? "").font(.custom("Helvetica Neue Bold", size: 14)).foregroundColor(Color(red: 128/255, green: 128/255, blue: 128/255)).lineLimit(1).fixedSize()
+                                        Text(index.wrappedValue.current_stock_data.symbol ?? "").font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.black).lineLimit(1)
+                                        Text(index.wrappedValue.current_stock_data.name ?? "").font(.custom("Helvetica Neue Bold", fixedSize: 14)).foregroundColor(Color(red: 128/255, green: 128/255, blue: 128/255)).lineLimit(1).fixedSize()
                                     }
                                     ZStack {
                                         HStack {
@@ -261,7 +314,7 @@ struct stocks_header: View {
     @Binding var items: [String]?
     @State var selected: Int = 0
     @State var overflow_quantity: Int = 0
-    @Binding var selected_stock: stock?
+    @Binding var selected_stock: Stock?
     var horizontalSpacing: CGFloat = 10
     var body: some View {
         ZStack {
@@ -295,11 +348,11 @@ struct stocks_header: View {
                                     }
                                 } //This nested in a ZStack is not by choice, its to silence unable to type check
                                 HStack(spacing: 0){
-                                    Text("\(stock.current_stock_data.symbol ?? "")").font(.custom("Helvetica Neue Bold", size: 20)).textCase(.uppercase).foregroundColor(.white).shadow(color: Color.black.opacity(0.8), radius: 0.25, x: 0, y: -2/3).padding(.leading, 8)
+                                    Text("\(stock.current_stock_data.symbol ?? "")").font(.custom("Helvetica Neue Bold", fixedSize: 20)).textCase(.uppercase).foregroundColor(.white).shadow(color: Color.black.opacity(0.8), radius: 0.25, x: 0, y: -2/3).padding(.leading, 8)
                                     Spacer()
-                                    Text("\(String(format: "%.2f", stock.current_stock_data.latestPrice ?? Double(0)))").font(.custom("Helvetica Neue Bold", size: 20)).textCase(.uppercase).foregroundColor(.white).shadow(color: Color.black.opacity(0.8), radius: 0.25, x: 0, y: -2/3).padding(.trailing, 8)
+                                    Text("\(String(format: "%.2f", stock.current_stock_data.currentPrice ?? Double(0)))").font(.custom("Helvetica Neue Bold", fixedSize: 20)).textCase(.uppercase).foregroundColor(.white).shadow(color: Color.black.opacity(0.8), radius: 0.25, x: 0, y: -2/3).padding(.trailing, 8)
                                     
-                                    stock_delta_capsule(content: "\(String((stock_mode ?? "Price") == "Price" ? String(format: "%.2f", stock.current_stock_data.change ?? Double(0)) : (stock_mode ?? "Price") == "%" ?                      "\(String(format: "%.2f", (stock.current_stock_data.changePercent ?? Double(0))*100))%" : suffixNumber(number: Double(selected_stock?.current_stock_data.marketCap ?? Int(0)) ?? Double(0))).replacingOccurrences(of: "-", with: ""))", color_indicator: String(format: "%.2f", stock.current_stock_data.change ?? Double(0)).contains("-") ? "red" : "green").frame(width: 87, height: 35).padding(.trailing, 8)
+                                    stock_delta_capsule(content: "\(String((stock_mode ?? "Price") == "Price" ? String(format: "%.2f", stock.current_stock_data.change ?? Double(0)) : (stock_mode ?? "Price") == "%" ?                      "\(String(format: "%.2f", (stock.current_stock_data.percentChange ?? Double(0))*100))%" : suffixNumber(number: Double(stock.current_stock_data.marketCap ?? Double(0))*1000000 ?? Double(0))).replacingOccurrences(of: "-", with: ""))", color_indicator: String(format: "%.2f", stock.current_stock_data.change ?? Double(0)).contains("-") ? "red" : "green").frame(width: 87, height: 35).padding(.trailing, 8)
                                 }
                             }.frame(height: 50)
                         }
@@ -342,7 +395,6 @@ struct stocks_header: View {
     }
 }
 
-
 struct stock_delta_capsule: View {
     var content: String
     var color_indicator: String
@@ -363,7 +415,7 @@ struct stock_delta_capsule: View {
                         Rectangle().fill(Color.white).frame(width: 13.5, height: 3.5).shadow(color: Color.black.opacity(0.75), radius: 0.25, x: 0, y: -2/3).offset(x: 8.5)
                     }
                     Spacer()
-                    Text(content).font(.custom("Helvetica Neue Bold", size: 20)).textCase(.uppercase).multilineTextAlignment(.trailing).foregroundColor(.white).shadow(color: Color.black.opacity(0.8), radius: 0.25, x: 0, y: -2/3).padding(.trailing, 5).minimumScaleFactor(0.5).lineLimit(0)
+                    Text(content).font(.custom("Helvetica Neue Bold", fixedSize: 20)).textCase(.uppercase).multilineTextAlignment(.trailing).foregroundColor(.white).shadow(color: Color.black.opacity(0.8), radius: 0.25, x: 0, y: -2/3).padding(.trailing, 5).minimumScaleFactor(0.5).lineLimit(0)
                 }.frame(width: geometry.size.width, height: geometry.size.height)
             }
         }
@@ -407,7 +459,7 @@ struct stocks_footer: View {
                         })
                     }
                     VStack(spacing: 0) {
-                        Text("\(company_name)").font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.white)
+                        Text("\(company_name)").font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.white)
                         stocks_footer_grid(geometry: geometry, open: open, mkt_cap: mkt_cap, high: high, f_high: f_high, low: low, f_low: f_low, vol: vol, avg_vol: avg_vol, pe: pe, yield: yield)
                     }.padding(.bottom, 45)
                 }
@@ -454,21 +506,21 @@ struct stocks_footer_grid: View {
             HStack(spacing: 0) {
                 
                 HStack(spacing: 0) {
-                    Text("Open:").font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white)
+                    Text("Open:").font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white)
                     Spacer()
                 }.frame(width: geometry.size.width/2 - 20).padding(.leading, 20).overlay(
                     HStack {
-                        Text(open).font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white).padding(.leading, 60)
+                        Text(open).font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white).padding(.leading, 60)
                         Spacer()
                     }.frame(width: geometry.size.width/2 - 20).padding(.leading, 20)
                 )
                 
                 HStack(spacing: 0) {
-                    Text("Mkt Cap:").font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white)
+                    Text("Mkt Cap:").font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white)
                     Spacer()
                 }.frame(width: geometry.size.width/2 - 20).padding(.trailing, 20).overlay(
                     HStack {
-                        Text(mkt_cap).font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white).padding(.leading, 80)
+                        Text(mkt_cap).font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white).padding(.leading, 80)
                         Spacer()
                     }.frame(width: geometry.size.width/2 - 20).padding(.trailing, 20)
                 )
@@ -479,21 +531,21 @@ struct stocks_footer_grid: View {
             HStack(spacing: 0) {
                 
                 HStack(spacing: 0) {
-                    Text("High:").font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white)
+                    Text("High:").font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white)
                     Spacer()
                 }.frame(width: geometry.size.width/2 - 20).padding(.leading, 20).overlay(
                     HStack {
-                        Text(high).font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white).padding(.leading, 60)
+                        Text(high).font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white).padding(.leading, 60)
                         Spacer()
                     }.frame(width: geometry.size.width/2 - 20).padding(.leading, 20)
                 )
                 
                 HStack(spacing: 0) {
-                    Text("52w High:").font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white)
+                    Text("52w High:").font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white)
                     Spacer()
                 }.frame(width: geometry.size.width/2 - 20).padding(.trailing, 20).overlay(
                     HStack {
-                        Text(f_high).font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white).padding(.leading, 80)
+                        Text(f_high).font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white).padding(.leading, 80)
                         Spacer()
                     }.frame(width: geometry.size.width/2 - 20).padding(.trailing, 20)
                 )
@@ -503,21 +555,21 @@ struct stocks_footer_grid: View {
             HStack(spacing: 0) {
                 
                 HStack(spacing: 0) {
-                    Text("Low:").font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white)
+                    Text("Low:").font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white)
                     Spacer()
                 }.frame(width: geometry.size.width/2 - 20).padding(.leading, 20).overlay(
                     HStack {
-                        Text(low).font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white).padding(.leading, 60)
+                        Text(low).font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white).padding(.leading, 60)
                         Spacer()
                     }.frame(width: geometry.size.width/2 - 20).padding(.leading, 20)
                 )
                 
                 HStack(spacing: 0) {
-                    Text("52w Low:").font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white)
+                    Text("52w Low:").font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white)
                     Spacer()
                 }.frame(width: geometry.size.width/2 - 20).padding(.trailing, 20).overlay(
                     HStack {
-                        Text(f_low).font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white).padding(.leading, 80)
+                        Text(f_low).font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white).padding(.leading, 80)
                         Spacer()
                     }.frame(width: geometry.size.width/2 - 20).padding(.trailing, 20)
                 )
@@ -527,21 +579,21 @@ struct stocks_footer_grid: View {
             HStack(spacing: 0) {
                 
                 HStack(spacing: 0) {
-                    Text("Vol:").font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white)
+                    Text("Vol:").font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white)
                     Spacer()
                 }.frame(width: geometry.size.width/2 - 20).padding(.leading, 20).overlay(
                     HStack {
-                        Text(vol).font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white).padding(.leading, 60)
+                        Text(vol).font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white).padding(.leading, 60)
                         Spacer()
                     }.frame(width: geometry.size.width/2 - 20).padding(.leading, 20)
                 )
                 
                 HStack(spacing: 0) {
-                    Text("Avg Vol:").font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white)
+                    Text("Avg Vol:").font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white)
                     Spacer()
                 }.frame(width: geometry.size.width/2 - 20).padding(.trailing, 20).overlay(
                     HStack {
-                        Text(avg_vol).font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white).padding(.leading, 80)
+                        Text(avg_vol).font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white).padding(.leading, 80)
                         Spacer()
                     }.frame(width: geometry.size.width/2 - 20).padding(.trailing, 20)
                 )
@@ -551,21 +603,21 @@ struct stocks_footer_grid: View {
             HStack(spacing: 0) {
                 
                 HStack(spacing: 0) {
-                    Text("P/E:").font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white)
+                    Text("P/E:").font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white)
                     Spacer()
                 }.frame(width: geometry.size.width/2 - 20).padding(.leading, 20).overlay(
                     HStack {
-                        Text(pe).font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white).padding(.leading, 60)
+                        Text(pe).font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white).padding(.leading, 60)
                         Spacer()
                     }.frame(width: geometry.size.width/2 - 20).padding(.leading, 20)
                 )
                 
                 HStack(spacing: 0) {
-                    Text("Yield:").font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white)
+                    Text("Yield:").font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white)
                     Spacer()
                 }.frame(width: geometry.size.width/2 - 20).padding(.trailing, 20).overlay(
                     HStack {
-                        Text(yield).font(.custom("Helvetica Neue Bold", size: 15)).foregroundColor(.white).padding(.leading, 80)
+                        Text(yield).font(.custom("Helvetica Neue Bold", fixedSize: 15)).foregroundColor(.white).padding(.leading, 80)
                         Spacer()
                     }.frame(width: geometry.size.width/2 - 20).padding(.trailing, 20)
                 )
@@ -583,51 +635,60 @@ struct stocks_footer_grid: View {
 //}
 //
 
-struct CurrentStockData: Codable {
-  let symbol: String?
-  let companyName: String?
-  let primaryExchange: String?
-  let calculationPrice: String?
-  let `open`: Double?
-  let openTime: Date?
-  let openSource: String?
-  let close: Double?
-  let closeTime: Date?
-  let closeSource: String?
-  let high: Double?
-  let highTime: Date?
-  let highSource: String?
-  let low: Double?
-  let lowTime: Date?
-  let lowSource: String?
-  let latestPrice: Double?
-  let latestSource: String?
-  let latestTime: String?
-  let latestUpdate: Date?
-  let latestVolume: Int?
-  let delayedPrice: Double?
-  let delayedPriceTime: Date?
-  let oddLotDelayedPrice: Double?
-  let oddLotDelayedPriceTime: Date?
-  let extendedPrice: Double?
-  let extendedChange: Double?
-  let extendedChangePercent: Double?
-  let extendedPriceTime: Date?
-  let previousClose: Double?
-  let previousVolume: Int?
-  let change: Double?
-  let changePercent: Double?
-  let volume: Int?
-  let avgTotalVolume: Int?
-  let iexOpen: Double?
-  let iexOpenTime: Date?
-  let iexClose: Double?
-  let iexCloseTime: Date?
-  let marketCap: Int?
-  let peRatio: Double?
-  let week52High: Double?
-  let week52Low: Double?
-  let ytdChange: Double?
-  let lastTradeTime: Date?
-  let isUSMarketOpen: Bool?
-}
+
+//struct stock: Identifiable, Equatable {
+//    let id = UUID()
+//    var current_stock_data: CurrentStockData
+//    static func == (lhs: stock, rhs: stock) -> Bool {
+//        return lhs.id == rhs.id
+//    }
+//}
+
+//struct CurrentStockData: Codable {
+//  let symbol: String?
+//  let companyName: String?
+//  let primaryExchange: String?
+//  let calculationPrice: String?
+//  let `open`: Double?
+//  let openTime: Date?
+//  let openSource: String?
+//  let close: Double?
+//  let closeTime: Date?
+//  let closeSource: String?
+//  let high: Double?
+//  let highTime: Date?
+//  let highSource: String?
+//  let low: Double?
+//  let lowTime: Date?
+//  let lowSource: String?
+//  let latestPrice: Double?
+//  let latestSource: String?
+//  let latestTime: String?
+//  let latestUpdate: Date?
+//  let latestVolume: Int?
+//  let delayedPrice: Double?
+//  let delayedPriceTime: Date?
+//  let oddLotDelayedPrice: Double?
+//  let oddLotDelayedPriceTime: Date?
+//  let extendedPrice: Double?
+//  let extendedChange: Double?
+//  let extendedChangePercent: Double?
+//  let extendedPriceTime: Date?
+//  let previousClose: Double?
+//  let previousVolume: Int?
+//  let change: Double?
+//  let changePercent: Double?
+//  let volume: Int?
+//  let avgTotalVolume: Int?
+//  let iexOpen: Double?
+//  let iexOpenTime: Date?
+//  let iexClose: Double?
+//  let iexCloseTime: Date?
+//  let marketCap: Int?
+//  let peRatio: Double?
+//  let week52High: Double?
+//  let week52Low: Double?
+//  let ytdChange: Double?
+//  let lastTradeTime: Date?
+//  let isUSMarketOpen: Bool?
+//}

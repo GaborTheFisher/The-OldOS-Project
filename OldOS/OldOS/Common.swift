@@ -90,7 +90,7 @@ struct multitasking_music_controls: View {
             }
         }.overlay(VStack {
             Spacer()
-            Text("\(now_playing)").font(.custom("Helvetica Neue Bold", size: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.9), radius: 0.75, x: 0, y: 1.75).offset(y: 15)
+            Text("\(now_playing)").font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.9), radius: 0.75, x: 0, y: 1.75).offset(y: 15)
         })
     }
 }
@@ -108,10 +108,10 @@ struct toggle_orange: View {
             )
             HStack {
                 Spacer()
-                Text("OFF").font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(Color(red: 125/255, green: 125/255, blue: 125/255)).padding(.trailing,12).shadow(color: Color.white.opacity(0.84), radius: 2, x: 0.0, y: 2).offset(x: 53.6666666667 + offset.x)
+                Text("OFF").font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(Color(red: 125/255, green: 125/255, blue: 125/255)).padding(.trailing,12).shadow(color: Color.white.opacity(0.84), radius: 2, x: 0.0, y: 2).offset(x: 53.6666666667 + offset.x)
             }.clipped()
             HStack {
-                Text("ON").font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.white).padding(.leading,14).shadow(color: Color.black.opacity(0.45), radius: 0.34, x: 0, y: -1.25)
+                Text("ON").font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.white).padding(.leading,14).shadow(color: Color.black.opacity(0.45), radius: 0.34, x: 0, y: -1.25)
                 ZStack {
                     Rectangle().fill(Color(red: 101/255, green: 41/255, blue: 1/255).opacity(0.6)).cornerRadius(4.25).padding(.leading, 4).offset(x:-1).frame(maxHeight:30).clipped().blur(0.5).opacity(offset.x > -52 ? 0.95 : 0)
                     Rectangle().fill(Color(red: 101/255, green: 41/255, blue: 1/255).opacity(0.6)).cornerRadius(4.25).padding(.leading, 4).offset(x:1).frame(maxHeight:30).clipped().blur(0.5).opacity(offset.x < -1 ? 0.95: 0)
@@ -133,7 +133,7 @@ struct generic_title_bar : View {
                 Spacer()
                 HStack {
                     Spacer()
-                    Text(title).ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", size: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1).id(title)
+                    Text(title).ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", fixedSize: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1).id(title)
                     Spacer()
                 }
                 Spacer()
@@ -161,7 +161,7 @@ struct generic_title_bar_clear_cancel : View {
                 Spacer()
                 HStack {
                     Spacer()
-                    Text(title).ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", size: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1).id(title)
+                    Text(title).ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", fixedSize: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1).id(title)
                     Spacer()
                 }
                 Spacer()
@@ -198,7 +198,7 @@ struct generic_title_bar_cancel_save : View {
                 Spacer()
                 HStack {
                     Spacer()
-                    Text(title).ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", size: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1).id(title)
+                    Text(title).ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", fixedSize: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1).id(title)
                     Spacer()
                 }
                 Spacer()
@@ -207,6 +207,41 @@ struct generic_title_bar_cancel_save : View {
             HStack {
                 Spacer()
                 tool_bar_rectangle_button(action: {save_action?()}, button_type: .blue, content: switch_to_done == true ? "Done" : "Save").padding(.trailing, 5)
+            }
+            }
+            if show_cancel == true {
+                HStack {
+                    tool_bar_rectangle_button(action: {cancel_action?()}, button_type: .blue_gray, content: "Cancel").padding(.leading, 5)
+                    Spacer()
+                }
+                
+            }
+        }
+    }
+}
+struct generic_title_bar_cancel_next : View {
+    var title:String
+    public var cancel_action: (() -> Void)?
+    public var save_action: (() -> Void)?
+    var show_cancel: Bool?
+    var show_save: Bool?
+    var switch_to_done: Bool?
+    var body :some View {
+        ZStack {
+            LinearGradient(gradient: Gradient(stops: [.init(color:Color(red: 180/255, green: 191/255, blue: 205/255), location: 0.0), .init(color:Color(red: 136/255, green: 155/255, blue: 179/255), location: 0.49), .init(color:Color(red: 128/255, green: 149/255, blue: 175/255), location: 0.49), .init(color:Color(red: 110/255, green: 133/255, blue: 162/255), location: 1.0)]), startPoint: .top, endPoint: .bottom).border_bottom(width: 1, edges: [.bottom], color: Color(red: 45/255, green: 48/255, blue: 51/255)).innerShadowBottom(color: Color(red: 230/255, green: 230/255, blue: 230/255), radius: 0.025)
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Text(title).ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", fixedSize: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1).id(title)
+                    Spacer()
+                }
+                Spacer()
+            }
+            if show_save == true {
+            HStack {
+                Spacer()
+                tool_bar_rectangle_button(action: {save_action?()}, button_type: .blue_gray, content: switch_to_done == true ? "Done" : "Next").padding(.trailing, 5)
             }
             }
             if show_cancel == true {
@@ -232,10 +267,10 @@ struct toggle: View {
             )
             HStack {
                 Spacer()
-                Text("OFF").font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(Color(red: 125/255, green: 125/255, blue: 125/255)).padding(.trailing,12).shadow(color: Color.white.opacity(0.84), radius: 2, x: 0.0, y: 2).offset(x: 53.6666666667 + offset.x)
+                Text("OFF").font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(Color(red: 125/255, green: 125/255, blue: 125/255)).padding(.trailing,12).shadow(color: Color.white.opacity(0.84), radius: 2, x: 0.0, y: 2).offset(x: 53.6666666667 + offset.x)
             }.clipped()
             HStack {
-                Text("ON").font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.white).padding(.leading,14).shadow(color: Color.black.opacity(0.45), radius: 0.34, x: 0, y: -1.25)
+                Text("ON").font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.white).padding(.leading,14).shadow(color: Color.black.opacity(0.45), radius: 0.34, x: 0, y: -1.25)
                 ZStack {
                     Rectangle().fill(Color(red: 101/255, green: 41/255, blue: 1/255).opacity(0.6)).cornerRadius(4.25).padding(.leading, 4).offset(x:-1).frame(maxHeight:30).clipped().blur(0.5).opacity(offset.x > -52 ? 0.95 : 0)
                     Rectangle().fill(Color(red: 101/255, green: 41/255, blue: 1/255).opacity(0.6)).cornerRadius(4.25).padding(.leading, 4).offset(x:1).frame(maxHeight:30).clipped().blur(0.5).opacity(offset.x < -1 ? 0.95: 0)
@@ -280,7 +315,7 @@ struct PrimaryButtonStyle2: ButtonStyle {
 struct NoHighlightButtonStyle: ButtonStyle {
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
-            .font(.custom("Helvetica Neue Bold", size: 13.25)).frame(width:14, height: 16.5)
+            .font(.custom("Helvetica Neue Bold", fixedSize: 13.25)).frame(width:14, height: 16.5)
             .foregroundColor(Color(red: 106/255, green: 115/255, blue: 125/255))
             .padding(.trailing, 12)
     }
@@ -309,7 +344,7 @@ struct list_section: View {
                                 if row.image != nil {
                                 Image(row.image ?? "").resizable().frame(width:30, height: 30).padding(.leading, 12)
                                 }
-                                Text(row.title).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
+                                Text(row.title).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
                                 Spacer()
                                 row.content
                             }
@@ -326,7 +361,7 @@ struct list_section: View {
                                 if row.image != nil {
                                 Image(row.image ?? "").resizable().frame(width:30, height: 30).padding(.leading, 12)
                                 }
-                                Text(row.title).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
+                                Text(row.title).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
                                 Spacer()
                                 row.content
                             }
@@ -361,7 +396,7 @@ struct list_section_content_only: View {
                                 Image(row.image ?? "").resizable().frame(width:30, height: 30).padding(.leading, 12)
                                 }
                                 if row.title != "" {
-                                Text(row.title).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
+                                Text(row.title).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
                                 Spacer()
                                 }
                                 row.content
@@ -380,7 +415,7 @@ struct list_section_content_only: View {
                                 Image(row.image ?? "").resizable().frame(width:30, height: 30).padding(.leading, 12)
                                 }
                                 if row.title != "" {
-                                Text(row.title).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
+                                Text(row.title).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
                                 Spacer()
                                 }
                                 row.content
@@ -416,7 +451,7 @@ struct list_section_content_only_large: View {
                                 Image(row.image ?? "").resizable().frame(width:30, height: 30).padding(.leading, 12)
                                 }
                                 if row.title != "" {
-                                Text(row.title).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
+                                Text(row.title).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
                                 Spacer()
                                 }
                                 row.content
@@ -435,7 +470,7 @@ struct list_section_content_only_large: View {
                                 Image(row.image ?? "").resizable().frame(width:30, height: 30).padding(.leading, 12)
                                 }
                                 if row.title != "" {
-                                Text(row.title).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
+                                Text(row.title).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
                                 Spacer()
                                 }
                                 row.content
@@ -471,7 +506,7 @@ struct list_section_oversize: View {
                                 if row.image != nil {
                                 Image(row.image ?? "").resizable().frame(width:30, height: 30).padding(.leading, 12)
                                 }
-                                Text(row.title).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
+                                Text(row.title).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 12)
                                 Spacer()
                                 row.content
                             }
@@ -488,7 +523,7 @@ struct list_section_oversize: View {
                                 if row.image != nil {
                                 Image(row.image ?? "").resizable().frame(width:30, height: 30).padding(.leading, 12)
                                 }
-                                Text(row.title).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 0)
+                                Text(row.title).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.black).padding(.leading, row.image != nil ? 0 : 0)
                                 row.content
                             }
                         }.frame(height: 50)
@@ -520,7 +555,7 @@ struct list_section_blue: View {
                                 if row.selected != nil {
                                 Image(row.image ?? "").resizable().frame(width:30, height: 30).padding(.leading, 12)
                                 }
-                                Text(row.title).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(Color(red: 50/255, green: 50/255, blue: 74/255)).padding(.leading, row.image != nil ? 0 : 12)
+                                Text(row.title).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(Color(red: 50/255, green: 50/255, blue: 74/255)).padding(.leading, row.image != nil ? 0 : 12)
                                 Spacer()
                                 row.content
                             }
@@ -539,7 +574,7 @@ struct list_section_blue: View {
                                 } else {
                                    // Spacer().frame(width:15).padding(.leading,12)
                                 }
-                                Text(row.title).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(row.selected == true ? Color(red: 62/255, green: 83/255, blue: 131/255) : .black).padding(.leading, row.image != nil ? 0 : 12)
+                                Text(row.title).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(row.selected == true ? Color(red: 62/255, green: 83/255, blue: 131/255) : .black).padding(.leading, row.image != nil ? 0 : 12)
                                 Spacer()
                                 row.content
                             }
@@ -561,7 +596,7 @@ struct title_bar : View {
                 Spacer()
                 HStack {
                     Spacer()
-                    Text(title).ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", size: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1).transition(AnyTransition.asymmetric(insertion: .move(edge:forward_or_backward == false ? .trailing : .leading), removal: .move(edge:forward_or_backward == false ? .leading : .trailing)).combined(with: .opacity)).id(title)
+                    Text(title).ps_innerShadow(Color.white, radius: 0, offset: 1, angle: 180.degrees, intensity: 0.07).font(.custom("Helvetica Neue Bold", fixedSize: 22)).shadow(color: Color.black.opacity(0.21), radius: 0, x: 0.0, y: -1).transition(AnyTransition.asymmetric(insertion: .move(edge:forward_or_backward == false ? .trailing : .leading), removal: .move(edge:forward_or_backward == false ? .leading : .trailing)).combined(with: .opacity)).id(title)
                     Spacer()
                 }
                 Spacer()
@@ -574,7 +609,7 @@ struct title_bar : View {
                     ZStack {
                         Image("Button2").resizable().aspectRatio(contentMode: .fit).frame(width:77)
                         HStack(alignment: .center) {
-                            Text((current_nav_view == "Wallpaper_Grid" || current_nav_view == "Wallpaper_Grid_Camera_Roll") ? "Back" : "Settings").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", size: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1)
+                            Text((current_nav_view == "Wallpaper_Grid" || current_nav_view == "Wallpaper_Grid_Camera_Roll") ? "Back" : "Settings").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", fixedSize: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1)
                         }
                     }.padding(.leading, 6)
                     }.transition(AnyTransition.asymmetric(insertion: .move(edge:forward_or_backward == false ? .trailing : .leading), removal: .move(edge:forward_or_backward == false ? .leading : .trailing)).combined(with: AnyTransition.opacity))
@@ -591,7 +626,7 @@ struct title_bar : View {
                     ZStack {
                         Image("Button_wp4").resizable().aspectRatio(contentMode: .fit).frame(width:84, height: 34.33783783783784)
                         HStack(alignment: .center) {
-                            Text("Wallpaper").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", size: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1).offset(x: 1)
+                            Text("Wallpaper").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", fixedSize: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1).offset(x: 1)
                         }
                     }.padding(.leading, 6)
                     }.transition(AnyTransition.asymmetric(insertion: .move(edge:forward_or_backward == false ? .trailing : .leading), removal: .move(edge:forward_or_backward == false ? .leading : .trailing)).combined(with: AnyTransition.opacity))
@@ -608,7 +643,24 @@ struct title_bar : View {
                     ZStack {
                         Image("Button2").resizable().aspectRatio(contentMode: .fit).frame(width:77)
                         HStack(alignment: .center) {
-                            Text("General").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", size: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1)
+                            Text("General").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", fixedSize: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1)
+                        }
+                    }.padding(.leading, 6)
+                    }.transition(AnyTransition.asymmetric(insertion: .move(edge:forward_or_backward == false ? .trailing : .leading), removal: .move(edge:forward_or_backward == false ? .leading : .trailing)).combined(with: AnyTransition.opacity))
+                    Spacer()
+                }
+                Spacer()
+            }
+            }
+            if  current_nav_view == "MCC_Action" {
+            VStack {
+                Spacer()
+                HStack {
+                    Button(action:{forward_or_backward = true; withAnimation(.linear(duration: 0.28)){current_nav_view = "Mail, Contacts, Calendars" }}) {
+                    ZStack {
+                        Image("Button2").resizable().aspectRatio(contentMode: .fit).frame(width:77)
+                        HStack(alignment: .center) {
+                            Text("Mail...").foregroundColor(Color.white).font(.custom("Helvetica Neue Bold", fixedSize: 13)).shadow(color: Color.black.opacity(0.45), radius: 0, x: 0, y: -0.6).padding(.leading,5).offset(y:-1.1)
                         }
                     }.padding(.leading, 6)
                     }.transition(AnyTransition.asymmetric(insertion: .move(edge:forward_or_backward == false ? .trailing : .leading), removal: .move(edge:forward_or_backward == false ? .leading : .trailing)).combined(with: AnyTransition.opacity))
@@ -641,7 +693,7 @@ struct status_bar_in_app: View {
         ZStack {
             LinearGradient(gradient: Gradient(colors: [Color.init(red: 237/255, green: 244/255, blue: 247/255), Color.init(red: 191/255, green: 199/255, blue: 203/255)]), startPoint: UnitPoint(x: 0.5, y: 0.07), endPoint: .bottom).innerShadowBottomView(color: Color.init(red: 142/255, green: 149/255, blue: 154/255), radius: 0.05).border_bottom(width: 0.45, edges:[.bottom], color: Color.init(red: 93/255, green: 100/255, blue: 105/255)).cornerRadiusSpecific(radius: 1.75, corners: [.topLeft, .topRight])
             HStack {
-                Text(carrier_id == "" ? "No SIM" : carrier_id).foregroundColor(carrier_id == "" ? .black : Color.init(red: 66/255, green: 66/255, blue: 66/255)).font(.custom("Helvetica Neue Bold", size: 15)).shadowStyle().onAppear() {
+                Text(carrier_id == "" ? "No SIM" : carrier_id == "--" ? "eSIM" : carrier_id).foregroundColor(carrier_id == "" ? .black : Color.init(red: 66/255, green: 66/255, blue: 66/255)).font(.custom("Helvetica Neue Bold", fixedSize: 15)).shadowStyle().onAppear() {
                     let networkInfo = CTTelephonyNetworkInfo()
                     let carrier = networkInfo.serviceSubscriberCellularProviders?.first?.value
                     
@@ -653,7 +705,7 @@ struct status_bar_in_app: View {
                     Image(systemName: "wifi").gradientForegroundNonDynamic(colors: [Color.init(red: 32/255, green: 157/255, blue: 237/255), Color.init(red: 72/255, green: 118/255, blue: 196/255)]) .opacity(wifi_connected ? 1 : 0).shadowStyle().mask( Image(systemName: "wifi").gradientForegroundNonDynamic(colors: [Color.init(red: 32/255, green: 157/255, blue: 237/255), Color.init(red: 72/255, green: 118/255, blue: 196/255)]) .opacity(wifi_connected ? 1 : 0).shadowStyle().innerShadow2(color: Color.black.opacity(0.8), radius: 1))//Is it messy, yes, does it work, yes
                 }
                 Spacer()
-                Text("\(Int(battery_level))%").foregroundColor(Color.init(red: 74/255, green: 74/255, blue: 74/255)).font(.custom("Helvetica Neue Bold", size: 15)).shadowStyle().offset(x: 10) //.isHidden(charging)
+                Text("\(Int(battery_level))%").foregroundColor(Color.init(red: 74/255, green: 74/255, blue: 74/255)).font(.custom("Helvetica Neue Bold", fixedSize: 15)).shadowStyle().offset(x: 10).isHidden(charging)
                 battery_in_app(battery: Float(battery_level/100), charging: charging)
                     .onReceive(timer) { input in
                         if (UIDevice.current.batteryState != .unplugged) {
@@ -680,7 +732,7 @@ struct status_bar_in_app: View {
             }.padding([.leading, .trailing], 4)
             HStack {
                 Spacer()
-                Text(timeString(date: date).uppercased()).foregroundColor(Color.black).font(.custom("Helvetica Neue Bold", size: 15)).shadowStyle()
+                Text(timeString(date: date).uppercased()).foregroundColor(Color.black).font(.custom("Helvetica Neue Bold", fixedSize: 15)).shadowStyle()
                 Spacer()
             }
         }.onAppear() {
@@ -732,6 +784,7 @@ struct battery_in_app: View {
                 Rectangle().fill(LinearGradient(gradient: Gradient(colors: [Color.init(red: 107/255, green: 208/255, blue: 55/255), Color.init(red: 215/255, green: 252/255, blue: 180/255), Color.init(red: 134/255, green: 226/255, blue: 73/255), Color.init(red: 68/255, green: 163/255, blue: 29/255)]), startPoint: .top, endPoint: UnitPoint(x: 0.5, y: 0.73))).innerShadow2(color: Color.init(red: 220/255, green: 255/255, blue: 177/255), radius: 0.2).frame(width: 21.5*CGFloat(battery), height: 12.25-1.5).offset(x:(-21.5/2)+(21.5/2)*CGFloat(battery)) .applyModifier(charging) {  AnyView($0.overlay(ZStack {Image(systemName:"bolt.fill").resizable().frame(width: 8, height: 12.25-2.5)}.frame(width: 21.5*CGFloat(battery), height: 12.25-1.5).foregroundColor(.black)))
                 }
             }
+            
             Rectangle().fill(LinearGradient(gradient: Gradient(colors: [Color.init(red: 250/255, green: 250/255, blue: 250/255), Color.init(red: 149/255, green: 149/255, blue: 149/255)]), startPoint: .top, endPoint: .bottom)).overlay(RoundedRectangle(cornerRadius:0.25).stroke(LinearGradient(gradient: Gradient(colors: [Color.init(red: 39/255, green: 41/255, blue: 47/255), Color.init(red: 95/255, green: 101/255, blue: 116/255)]), startPoint: .top, endPoint: .bottom), lineWidth: 1)).frame(width: 3, height: 5).offset(x:-7.95)
         }
     }
@@ -820,10 +873,10 @@ struct dual_segmented_control: View {
         GeometryReader{ geometry in
             HStack(spacing: 0) {
                 Button(action:{selected = 0}) {
-                    Text(first_text).font(.custom("Helvetica Neue Bold", size: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
+                    Text(first_text).font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
                 }.frame(width: geometry.size.width/2, height: geometry.size.height).ps_innerShadow(.rectangleCustomCorners(selected == 0 ? selected_gradient: unselected_gradient), radius:0.82, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
                 Button(action:{selected = 1}) {
-                    Text(second_text).font(.custom("Helvetica Neue Bold", size: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
+                    Text(second_text).font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
                 }.frame(width: geometry.size.width/2, height: geometry.size.height).ps_innerShadow(.rectangleCustomCornersRight(selected == 1 ? selected_gradient: unselected_gradient), radius:0.82, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
             }.overlay(
                 ZStack {
@@ -855,6 +908,58 @@ struct dual_segmented_control: View {
     }
 }
 
+struct dual_segmented_control_image_button: View {
+    @State var selected: Int = 12 //either 0 or 1
+    @Binding var instant_multitasking_change: Bool
+    var first_action: (() -> Void)?
+    var second_action: (() -> Void)?
+    var first_text: String
+    var second_text: String
+    var should_animate:Bool?
+    private let unselected_gradient = LinearGradient([(color: Color(red: 158/255, green: 173/255, blue: 191/255), location: 0), (color: Color(red: 137/255, green: 155/255, blue: 178/255), location: 0.51), (color: Color(red: 127/255, green: 148/255, blue: 176/255), location: 0.51), (color: Color(red: 126/255, green: 148/255, blue: 178/255), location: 1)], from: .top, to: .bottom)
+    private let selected_gradient = LinearGradient([(color: Color(red: 136/255, green: 160/255, blue: 190/255), location: 0), (color: Color(red: 88/255, green: 119/255, blue: 162/255), location: 0.51), (color: Color(red: 71/255, green: 105/255, blue: 153/255), location: 0.51), (color: Color(red: 74/255, green: 108/255, blue: 154/255), location: 1)], from: .top, to: .bottom)
+    private let middle_gradient = LinearGradient([(color: Color(red: 73/255, green: 85/255, blue: 98/255), location: 0), (color: Color(red: 92/255, green: 118/255, blue: 156/255), location: 0.04), (color: Color(red: 58/255, green: 90/255, blue: 136/255), location: 0.51), (color: Color(red: 51/255, green: 84/255, blue: 131/255), location: 0.51), (color: Color(red: 37/255, green: 72/255, blue: 120/255), location: 1)], from: .top, to: .bottom)
+    var body: some View {
+        GeometryReader{ geometry in
+            HStack(spacing: 0) {
+                Button(action:{first_action?()}) {
+                    Image(first_text)
+                    //Text(first_text).font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(.white)//.shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
+                }.frame(width: geometry.size.width/2, height: geometry.size.height).ps_innerShadow(.rectangleCustomCorners(unselected_gradient), radius:0.82, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
+                Button(action:{second_action?()}) {
+                    Image(second_text)
+                  //  Text(second_text).font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
+                }.frame(width: geometry.size.width/2, height: geometry.size.height).ps_innerShadow(.rectangleCustomCornersRight(unselected_gradient), radius:0.82, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
+            }.overlay(
+                ZStack {
+                    HStack(spacing:0) {
+                        Spacer()
+                        Rectangle().fill(unselected_gradient).frame(width: 2).mask(
+                            VStack(spacing:0) {
+                                Rectangle().fill(LinearGradient([.clear, .white], from: .top, to: .bottom)).frame(height:4.5)
+                                Rectangle()
+                                Rectangle().fill(LinearGradient([.white, .clear], from: .top, to: .bottom)).frame(height: 1.5)
+                            })
+                        Rectangle().fill(unselected_gradient).frame(width: 2).mask(
+                            VStack(spacing:0) {
+                                Rectangle().fill(LinearGradient([.clear, .white], from: .top, to: .bottom)).frame(height:4.5)
+                                Rectangle()
+                                Rectangle().fill(LinearGradient([.white, .clear], from: .top, to: .bottom)).frame(height: 1.5)
+                                
+                            })
+                        Spacer()
+                    }
+                    HStack {
+                        Spacer()
+                        Rectangle().fill(Color(red: 119/255, green: 128/255, blue: 144/255)).frame(width: 1)
+                        Spacer()
+                    }
+                }
+            )
+        }.animation((should_animate == true || instant_multitasking_change == true) ? .default : .none).transition(AnyTransition.asymmetric(insertion: .move(edge:.leading), removal: .move(edge: .leading)))
+    }
+}
+
 struct dual_segmented_control_big_bluegray: View {
     @Binding var selected: Int //either 0 or 1
     var first_text: String
@@ -867,10 +972,10 @@ struct dual_segmented_control_big_bluegray: View {
         GeometryReader{ geometry in
             HStack(spacing: 0) {
                 Button(action:{selected = 0}) {
-                    Text(first_text).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(selected == 0 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 0 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 0 ? -0.66 : 0.99)
+                    Text(first_text).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(selected == 0 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 0 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 0 ? -0.66 : 0.99)
                 }.frame(width: geometry.size.width/2, height: geometry.size.height).ps_innerShadow(.rectangleCustomCorners_Double(selected == 0 ? selected_gradient: unselected_gradient), radius:3, offset: CGPoint(0, 3), intensity: selected == 0 ? 0.4 : 0).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
                 Button(action:{selected = 1}) {
-                    Text(second_text).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(selected == 1 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 1 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 1 ? -0.66 : 0.99)
+                    Text(second_text).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(selected == 1 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 1 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 1 ? -0.66 : 0.99)
                 }.frame(width: geometry.size.width/2, height: geometry.size.height).ps_innerShadow(.rectangleCustomCornersRight_Double(selected == 1 ? selected_gradient: unselected_gradient), radius:3, offset: CGPoint(0, 3), intensity: selected == 1 ? 0.4 : 0).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
             }.strokeRoundedRectangle(12, Color(red: 172/255, green: 172/255, blue: 172/255), lineWidth: 0.75)
         }.animation(should_animate == true ? .default : .none).transition(AnyTransition.asymmetric(insertion: .move(edge:.leading), removal: .move(edge: .leading)))
@@ -889,10 +994,10 @@ struct dual_segmented_control_big_bluegray_no_stroke: View {
         GeometryReader{ geometry in
             HStack(spacing: 0) {
                 Button(action:{selected = 0}) {
-                    Text(first_text).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(selected == 0 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 0 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 0 ? -0.66 : 0.99)
+                    Text(first_text).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(selected == 0 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 0 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 0 ? -0.66 : 0.99)
                 }.frame(width: geometry.size.width/2, height: geometry.size.height).ps_innerShadow(.rectangleCustomCorners_Double(selected == 0 ? selected_gradient: unselected_gradient), radius:3, offset: CGPoint(0, 3), intensity: selected == 0 ? 0.4 : 0).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
                 Button(action:{selected = 1}) {
-                    Text(second_text).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(selected == 1 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 1 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 1 ? -0.66 : 0.99)
+                    Text(second_text).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(selected == 1 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 1 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 1 ? -0.66 : 0.99)
                 }.frame(width: geometry.size.width/2, height: geometry.size.height).ps_innerShadow(.rectangleCustomCornersRight_Double(selected == 1 ? selected_gradient: unselected_gradient), radius:3, offset: CGPoint(0, 3), intensity: selected == 1 ? 0.4 : 0).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
             }
         }.animation(should_animate == true ? .default : .none).transition(AnyTransition.asymmetric(insertion: .move(edge:.leading), removal: .move(edge: .leading)))
@@ -912,10 +1017,10 @@ struct tri_control_big_bluegray_no_stroke: View {
         GeometryReader{ geometry in
             HStack(spacing: 0) {
                 Button(action:{selected = 0}) {
-                    Text(first_text).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(selected == 0 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 0 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 0 ? -0.66 : 0.99)
+                    Text(first_text).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(selected == 0 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 0 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 0 ? -0.66 : 0.99)
                 }.frame(width: geometry.size.width/3, height: geometry.size.height).ps_innerShadow(.rectangleCustomCorners_Double(selected == 0 ? selected_gradient: unselected_gradient), radius:3, offset: CGPoint(0, 3), intensity: selected == 0 ? 0.4 : 0).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
                 Button(action:{selected = 1}) {
-                    Text(second_text).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(selected == 1 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 1 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 1 ? -0.66 : 0.99)
+                    Text(second_text).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(selected == 1 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 1 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 1 ? -0.66 : 0.99)
                 }.frame(width: geometry.size.width/3, height: geometry.size.height).ps_innerShadow(.rectangle(selected == 1 ? selected_gradient: unselected_gradient), radius:3, offset: CGPoint(0, 3), intensity: selected == 1 ? 0.4 : 0).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8).if(selected == 0 || selected == 2) {
                     $0.overlay(HStack(spacing: 0) {
                         if selected == 0 {
@@ -928,7 +1033,7 @@ struct tri_control_big_bluegray_no_stroke: View {
                     })
                 }
                 Button(action:{selected = 2}) {
-                    Text(third_text).font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(selected == 2 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 2 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 2 ? -0.66 : 0.99)
+                    Text(third_text).font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(selected == 2 ? .white : Color(red: 127/255, green: 127/255, blue: 127/255)).shadow(color: selected == 2 ? Color.black.opacity(0.4) : Color.white.opacity(0.9), radius: 0, x: 0, y: selected == 2 ? -0.66 : 0.99)
                 }.frame(width: geometry.size.width/3, height: geometry.size.height).ps_innerShadow(.rectangleCustomCornersRight_Double(selected == 2 ? selected_gradient: unselected_gradient), radius:3, offset: CGPoint(0, 3), intensity: selected == 2 ? 0.4 : 0).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
             }
         }.animation(should_animate == true ? .default : .none).transition(AnyTransition.asymmetric(insertion: .move(edge:.leading), removal: .move(edge: .leading)))
@@ -949,13 +1054,13 @@ struct tri_segmented_control: View {
         GeometryReader{ geometry in
             HStack(spacing: 0) {
                 Button(action:{selected = 0}) {
-                    Text(first_text).font(.custom("Helvetica Neue Bold", size: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
+                    Text(first_text).font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
                 }.frame(width: geometry.size.width/3, height: geometry.size.height).ps_innerShadow(.rectangleCustomCorners(selected == 0 ? selected_gradient: unselected_gradient), radius:0.82, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
                 Button(action:{selected = 1}) {
-                    Text(second_text).font(.custom("Helvetica Neue Bold", size: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
+                    Text(second_text).font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
                 }.frame(width: geometry.size.width/3, height: geometry.size.height).ps_innerShadow(.rectangle(selected == 1 ? selected_gradient: unselected_gradient), radius:0.82, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
                 Button(action:{selected = 2}) {
-                    Text(third_text).font(.custom("Helvetica Neue Bold", size: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
+                    Text(third_text).font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
                 }.frame(width: geometry.size.width/3, height: geometry.size.height).ps_innerShadow(.rectangleCustomCornersRight(selected == 2 ? selected_gradient: unselected_gradient), radius:0.82, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
             }.overlay(
                 ZStack {
@@ -1008,6 +1113,81 @@ struct tri_segmented_control: View {
         }.animation((should_animate == true || instant_multitasking_change == true) ? .default : .none).transition(AnyTransition.asymmetric(insertion: .move(edge:.leading), removal: .move(edge: .leading)))
     }
 }
+
+struct tri_segmented_control_youtube: View {
+    @Binding var selected: Int //either 0 or 1
+    @Binding var instant_multitasking_change: Bool
+    var first_text: String
+    var second_text: String
+    var third_text: String
+    var should_animate:Bool?
+    private let unselected_gradient = LinearGradient([(color: Color(red: 158/255, green: 173/255, blue: 191/255), location: 0), (color: Color(red: 137/255, green: 155/255, blue: 178/255), location: 0.51), (color: Color(red: 127/255, green: 148/255, blue: 176/255), location: 0.51), (color: Color(red: 126/255, green: 148/255, blue: 178/255), location: 1)], from: .top, to: .bottom)
+    private let selected_gradient = LinearGradient([(color: Color(red: 136/255, green: 160/255, blue: 190/255), location: 0), (color: Color(red: 88/255, green: 119/255, blue: 162/255), location: 0.51), (color: Color(red: 71/255, green: 105/255, blue: 153/255), location: 0.51), (color: Color(red: 74/255, green: 108/255, blue: 154/255), location: 1)], from: .top, to: .bottom)
+    private let middle_gradient = LinearGradient([(color: Color(red: 73/255, green: 85/255, blue: 98/255), location: 0), (color: Color(red: 92/255, green: 118/255, blue: 156/255), location: 0.04), (color: Color(red: 58/255, green: 90/255, blue: 136/255), location: 0.51), (color: Color(red: 51/255, green: 84/255, blue: 131/255), location: 0.51), (color: Color(red: 37/255, green: 72/255, blue: 120/255), location: 1)], from: .top, to: .bottom)
+    var body: some View {
+        GeometryReader{ geometry in
+            HStack(spacing: 0) {
+                Button(action:{selected = 0}) {
+                    Text(first_text).font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
+                }.frame(width: geometry.size.width/3, height: geometry.size.height).ps_innerShadow(.rectangleCustomCorners(selected == 0 ? selected_gradient: unselected_gradient), radius:0.82, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
+                Button(action:{selected = 1}) {
+                    Text(second_text).font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
+                }.frame(width: geometry.size.width/3, height: geometry.size.height).ps_innerShadow(.rectangle(selected == 1 ? selected_gradient: unselected_gradient), radius:0.82, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
+                Button(action:{selected = 2}) {
+                    Text(third_text).font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(.white).shadow(color: Color.black.opacity(0.6), radius: 0, x: 0, y: -0.66)
+                }.frame(width: geometry.size.width/3, height: geometry.size.height).ps_innerShadow(.rectangleCustomCornersRight(selected == 2 ? selected_gradient: unselected_gradient), radius:0.82, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
+            }.overlay(
+                ZStack {
+                    HStack(spacing:0) {
+                        Spacer().frame(width: geometry.size.width/3-2)
+                        Rectangle().fill(selected == 0 ? selected_gradient: unselected_gradient).frame(width: 2).mask(
+                            VStack(spacing:0) {
+                                Rectangle().fill(LinearGradient([.clear, .white], from: .top, to: .bottom)).frame(height:4.5)
+                                Rectangle()
+                                Rectangle().fill(LinearGradient([.white, .clear], from: .top, to: .bottom)).frame(height: 1.5)
+                            })
+                        Rectangle().fill((selected == 1) ? selected_gradient: unselected_gradient).frame(width: 2).mask(
+                            VStack(spacing:0) {
+                                Rectangle().fill(LinearGradient([.clear, .white], from: .top, to: .bottom)).frame(height:4.5)
+                                Rectangle()
+                                Rectangle().fill(LinearGradient([.white, .clear], from: .top, to: .bottom)).frame(height: 1.5)
+                                
+                            })
+                        Spacer().frame(width: geometry.size.width*2/3-2)
+                    }
+                    HStack(spacing:0) {
+                        Spacer().frame(width: geometry.size.width*2/3-2)
+                        Rectangle().fill(selected == 1 ? selected_gradient: unselected_gradient).frame(width: 2).mask(
+                            VStack(spacing:0) {
+                                Rectangle().fill(LinearGradient([.clear, .white], from: .top, to: .bottom)).frame(height:4.5)
+                                Rectangle()
+                                Rectangle().fill(LinearGradient([.white, .clear], from: .top, to: .bottom)).frame(height: 1.5)
+                            })
+                        Rectangle().fill((selected == 2) ? selected_gradient: unselected_gradient).frame(width: 2).mask(
+                            VStack(spacing:0) {
+                                Rectangle().fill(LinearGradient([.clear, .white], from: .top, to: .bottom)).frame(height:4.5)
+                                Rectangle()
+                                Rectangle().fill(LinearGradient([.white, .clear], from: .top, to: .bottom)).frame(height: 1.5)
+                                
+                            })
+                        Spacer().frame(width: geometry.size.width/3-2)
+                    }
+                    HStack {
+                        Spacer().frame(width: geometry.size.width/3-0.5)
+                        Rectangle().fill(middle_gradient).frame(width: 1)
+                        Spacer().frame(width: geometry.size.width*2/3-0.5)
+                    }
+                    HStack {
+                        Spacer().frame(width: geometry.size.width*2/3-0.5)
+                        Rectangle().fill(middle_gradient).frame(width: 1)
+                        Spacer().frame(width: geometry.size.width/3-0.5)
+                    }
+                }
+            )
+        }.animation((should_animate == true || instant_multitasking_change == true) ? .linear(duration: 0.4) : .none)
+    }
+}
+
 
 struct tri_segmented_control_image: View {
     @Binding var selected: Int //either 0 or 1
@@ -1096,13 +1276,13 @@ struct tri_segmented_control_gray: View {
         GeometryReader{ geometry in
             HStack(spacing: 0) {
                 Button(action:{selected = 0}) {
-                    Text(first_text).font(.custom("Helvetica Neue Bold", size: 13)).foregroundColor(selected == 0 ? Color.white : Color(red: 74/255, green: 102/255, blue: 139/255)).shadow(color: selected == 0 ? Color(red:44/255, green: 45/255, blue:46/255).opacity(0.47) : Color.white.opacity(0.47), radius: 0, x: 0, y: selected == 0 ? -0.66 : 0.66)
+                    Text(first_text).font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(selected == 0 ? Color.white : Color(red: 74/255, green: 102/255, blue: 139/255)).shadow(color: selected == 0 ? Color(red:44/255, green: 45/255, blue:46/255).opacity(0.47) : Color.white.opacity(0.47), radius: 0, x: 0, y: selected == 0 ? -0.66 : 0.66)
                 }.frame(width: geometry.size.width/3, height: geometry.size.height).ps_innerShadow(.rectangleCustomCorners(selected == 0 ? selected_gradient: unselected_gradient), radius:0.82, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
                 Button(action:{selected = 1}) {
-                    Text(second_text).font(.custom("Helvetica Neue Bold", size: 13)).foregroundColor(selected == 1 ? Color.white : Color(red: 74/255, green: 102/255, blue: 139/255)).shadow(color: selected == 1 ? Color(red:44/255, green: 45/255, blue:46/255).opacity(0.47) : Color.white.opacity(0.47), radius: 0, x: 0, y: selected == 1 ? -0.66 : 0.66)
+                    Text(second_text).font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(selected == 1 ? Color.white : Color(red: 74/255, green: 102/255, blue: 139/255)).shadow(color: selected == 1 ? Color(red:44/255, green: 45/255, blue:46/255).opacity(0.47) : Color.white.opacity(0.47), radius: 0, x: 0, y: selected == 1 ? -0.66 : 0.66)
                 }.frame(width: geometry.size.width/3, height: geometry.size.height).ps_innerShadow(.rectangle(selected == 1 ? selected_gradient: unselected_gradient), radius:0.82, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
                 Button(action:{selected = 2}) {
-                    Text(third_text).font(.custom("Helvetica Neue Bold", size: 13)).foregroundColor(selected == 2 ? Color.white : Color(red: 74/255, green: 102/255, blue: 139/255)).shadow(color: selected == 2 ? Color(red:44/255, green: 45/255, blue:46/255).opacity(0.47) : Color.white.opacity(0.47), radius: 0, x: 0, y: selected == 2 ? -0.66 : 0.66)
+                    Text(third_text).font(.custom("Helvetica Neue Bold", fixedSize: 13)).foregroundColor(selected == 2 ? Color.white : Color(red: 74/255, green: 102/255, blue: 139/255)).shadow(color: selected == 2 ? Color(red:44/255, green: 45/255, blue:46/255).opacity(0.47) : Color.white.opacity(0.47), radius: 0, x: 0, y: selected == 2 ? -0.66 : 0.66)
                 }.frame(width: geometry.size.width/3, height: geometry.size.height).ps_innerShadow(.rectangleCustomCornersRight(selected == 2 ? selected_gradient: unselected_gradient), radius:0.82, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
             }.overlay(
                 ZStack {
@@ -1465,6 +1645,307 @@ struct CustomSlider<Component: View>: View {
     }
 }
 
+extension Notification.Name {
+    static let memoSliderDidScrub     = Notification.Name("MemoSliderDidScrub")      // userInfo: ["time": Double]
+    static let memoSliderDidEndScrub  = Notification.Name("MemoSliderDidEndScrub")   // userInfo: ["time": Double]
+}
+
+import SwiftUI
+import MediaPlayer
+
+private let kEps: Double = 1e-9
+
+struct CustomSliderMemo<Component: View>: View {
+    @Binding var value: Double
+    @Binding var should_update_from_timer: Bool?
+    var duration: Double?
+    var type: String
+    var range: (Double, Double)
+    var knobWidth: CGFloat?
+    let viewBuilder: (CustomSliderComponents) -> Component
+
+    init(type: String,
+         should_update_from_timer: Binding<Bool?> = .constant(true),
+         duration: Double = 0,
+         value: Binding<Double>,
+         range: (Double, Double),
+         knobWidth: CGFloat? = nil,
+         _ viewBuilder: @escaping (CustomSliderComponents) -> Component
+    ) {
+        self.type = type
+        _should_update_from_timer = should_update_from_timer
+        self.duration = duration
+        _value = value
+        self.range = range
+        self.viewBuilder = viewBuilder
+        self.knobWidth = knobWidth
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            self.view(geometry: geometry)
+        }
+    }
+
+    private func view(geometry: GeometryProxy) -> some View {
+        var frame = geometry.localFrame
+        if type == "Song" || type == "Memo" {
+            frame = geometry.frame(in: .local)
+        } else {
+            frame = geometry.frame(in: .global)
+        }
+
+        // ⛑ Ensure sane, non-zero geometry to avoid CALayer invalid sizes
+        frame.size.width  = max(frame.size.width, 1)
+        frame.size.height = max(frame.size.height, 1)
+
+        let drag = DragGesture(minimumDistance: 0)
+            .onChanged { drag in
+                self.onSliderDragChange(drag, frame)
+            }
+            .onEnded { drag in
+                if type == "Song" {
+                    should_update_from_timer = true
+                }
+                if type == "Memo" {
+                    // finalize seek for memos — only if we have a valid duration
+                    guard let dur = duration, dur > 0 else {
+                        should_update_from_timer = true
+                        return
+                    }
+                    let finalTime = clampedTime(from: drag, frame: frame, safeDuration: dur)
+                    NotificationCenter.default.post(
+                        name: .memoSliderDidEndScrub,
+                        object: nil,
+                        userInfo: ["time": finalTime]
+                    )
+                    should_update_from_timer = true
+                }
+            }
+
+        let offsetX = max(0, self.getOffsetX(frame: frame)) // ⛑ clamp ≥ 0
+
+        let kH = frame.height
+        let kW = max(self.knobWidth ?? kH, 0)               // ⛑ knob width ≥ 0
+        let knobSize = CGSize(width: kW, height: kH)
+
+        let leftW  = max(CGFloat(offsetX) + knobSize.width * 0.5, 0)    // ⛑ ≥ 0
+        let totalW = max(frame.width, 0)
+        let rightW = max(totalW - leftW, 0)                               // ⛑ ≥ 0
+
+        let barLeftSize  = CGSize(width: leftW,  height: frame.height)
+        let barRightSize = CGSize(width: rightW, height: frame.height)
+
+        let modifiers = CustomSliderComponents(
+            barLeft:  CustomSliderModifier(name: .barLeft,  size: barLeftSize,  offset: 0),
+            barRight: CustomSliderModifier(name: .barRight, size: barRightSize, offset: leftW),
+            knob:     CustomSliderModifier(name: .knob,     size: knobSize,     offset: offsetX)
+        )
+
+        return ZStack {
+            viewBuilder(modifiers).gesture(drag)
+        }
+    }
+
+    private func onSliderDragChange(_ drag: DragGesture.Value, _ frame: CGRect) {
+        let viewW = Double(max(frame.size.width, 1))                    // ⛑ ≥ 1
+        let kW    = Double(max((knobWidth ?? frame.size.height), 0))    // ⛑ ≥ 0
+        let usable = max(viewW - kW, 0)                                 // ⛑ ≥ 0
+        let xrange = (min: 0.0, max: usable)
+
+        var v = Double(drag.startLocation.x + drag.translation.width)   // knob center x
+        v -= 0.5 * kW                                                  // to leading edge
+        v = min(max(v, xrange.min), xrange.max)
+
+        // ⛑ Guard range span to avoid NaN
+        let rMin = range.0
+        let rMax = range.1
+        let span = max(rMax - rMin, kEps)
+
+        // map position → slider value in provided range
+        let t = usable > 0 ? (v / usable) : 0
+        let newValue = rMin + t * span
+        self.value = newValue
+
+        if type == "Brightness" {
+            UIScreen.main.brightness = CGFloat(newValue / 100)
+        }
+
+        if type == "Volume" {
+            MPVolumeView.setVolume(Float(newValue / 100))
+        }
+
+        if type == "Song" {
+            should_update_from_timer = false
+            let music_player = MPMusicPlayerController.systemMusicPlayer
+            DispatchQueue.global(qos: .background).async {
+                let dur = max(self.duration ?? 0, 0)
+                let safe = dur > 0 ? (newValue / 100 * dur) : 0          // ⛑ safe seek
+                music_player.currentPlaybackTime = safe
+            }
+        }
+
+        if type == "Memo" {
+            // Pause timer-driven updates while dragging and notify the player — only if valid duration
+            should_update_from_timer = false
+            guard let dur = duration, dur > 0 else { return }           // ⛑ nothing loaded
+            let tSec = timeFromValue(newValue, safeDuration: dur)        // seconds
+            NotificationCenter.default.post(
+                name: .memoSliderDidScrub,
+                object: nil,
+                userInfo: ["time": tSec]
+            )
+        }
+    }
+
+    private func clampedTime(from drag: DragGesture.Value, frame: CGRect, safeDuration: Double) -> Double {
+        let viewW = Double(max(frame.size.width, 1))
+        let kW    = Double(max((knobWidth ?? frame.size.height), 0))
+        let usable = max(viewW - kW, 0)
+        let xrange = (min: 0.0, max: usable)
+
+        var v = Double(drag.startLocation.x + drag.translation.width)
+        v -= 0.5 * kW
+        v = min(max(v, xrange.min), xrange.max)
+
+        let rMin = range.0
+        let rMax = range.1
+        let span = max(rMax - rMin, kEps)
+
+        let t = usable > 0 ? (v / usable) : 0
+        let val = rMin + t * span
+        return timeFromValue(val, safeDuration: safeDuration)
+    }
+
+    private func timeFromValue(_ val: Double, safeDuration: Double) -> Double {
+        // If using legacy 0...100 range, map to seconds via duration; else val is already seconds.
+        if abs((range.1 - range.0) - 100) < 0.5 {
+            return safeDuration > 0 ? (val / 100.0) * safeDuration : 0
+        } else {
+            // clamp inside [0, duration] if duration is known
+            return safeDuration > 0 ? min(max(val, 0), safeDuration) : max(val, 0)
+        }
+    }
+
+    private func timeFromValue(_ val: Double) -> Double {
+        // Backward-compatible overload; used in onChanged before checking duration
+        if let dur = duration, abs((range.1 - range.0) - 100) < 0.5 {
+            return dur > 0 ? (val / 100.0) * dur : 0
+        } else {
+            return val
+        }
+    }
+
+    private func getOffsetX(frame: CGRect) -> CGFloat {
+        let viewW = max(frame.size.width, 1)
+        let kW    = max((knobWidth ?? frame.size.height), 0)
+        let usable = max(Double(viewW - kW), 0)
+
+        let rMin = range.0
+        let rMax = range.1
+        let span = max(rMax - rMin, kEps)        // ⛑ avoid /0
+
+        let t = (self.value - rMin) / span
+        let x = CGFloat(min(max(t, 0), 1)) * CGFloat(usable)
+        return max(x, 0)                          // ⛑ ≥ 0
+    }
+}
+
+
+
+struct CustomSliderVideo<Component: View>: View {
+    @Binding var value: Double
+    @Binding var should_update_from_timer: Bool?
+    @Binding var duration: Double?
+    @Binding var player: AVPlayer
+    var type: String
+    var range: (Double, Double)
+    var knobWidth: CGFloat?
+    let viewBuilder: (CustomSliderComponents) -> Component
+
+    init(player: Binding<AVPlayer>, type: String, should_update_from_timer: Binding<Bool?> = .constant(true), duration: Binding<Double?> = .constant(0), value: Binding<Double>, range: (Double, Double), knobWidth: CGFloat? = nil,
+         _ viewBuilder: @escaping (CustomSliderComponents) -> Component
+    ) {
+        self.type = type
+        _should_update_from_timer = should_update_from_timer
+        _duration = duration
+        _value = value
+        _player = player
+        self.range = range
+        self.viewBuilder = viewBuilder
+        self.knobWidth = knobWidth
+    }
+
+    var body: some View {
+      return GeometryReader { geometry in
+        self.view(geometry: geometry) // function below
+      }
+    }
+
+
+    private func view(geometry: GeometryProxy) -> some View {
+        var frame = geometry.localFrame
+           frame = geometry.frame(in: .local)
+            let drag = DragGesture(minimumDistance: 0).onChanged({ drag in
+        self.onSliderDragChange(drag, frame) }
+      ).onEnded({ _ in
+//        if type == "Song" {
+//           should_update_from_timer = true
+//       } //Maybe unnecesary now
+      })
+      let offsetX = self.getOffsetX(frame: frame)
+    
+      let knobSize = CGSize(width: knobWidth ?? frame.height, height: frame.height)
+      let barLeftSize = CGSize(width: CGFloat(offsetX + knobSize.width * 0.5), height:  frame.height)
+      let barRightSize = CGSize(width: frame.width - barLeftSize.width, height: frame.height)
+
+      let modifiers = CustomSliderComponents(
+          barLeft: CustomSliderModifier(name: .barLeft, size: barLeftSize, offset: 0),
+          barRight: CustomSliderModifier(name: .barRight, size: barRightSize, offset: barLeftSize.width),
+          knob: CustomSliderModifier(name: .knob, size: knobSize, offset: offsetX))
+      return ZStack { viewBuilder(modifiers).gesture(drag) }
+    }
+    private func onSliderDragChange(_ drag: DragGesture.Value,_ frame: CGRect) {
+        let width = (knob: Double(knobWidth ?? frame.size.height), view: Double(frame.size.width))
+        let xrange = (min: Double(0), max: Double(width.view - width.knob))
+        var value = Double(drag.startLocation.x + drag.translation.width) // knob center x
+        value -= 0.5*width.knob // offset from center to leading edge of knob
+        value = value > xrange.max ? xrange.max : value // limit to leading edge
+        value = value < xrange.min ? xrange.min : value // limit to trailing edge
+        value = value.convert(fromRange: (xrange.min, xrange.max), toRange: range)
+        self.value = value
+        if type == "Volume" {
+        MPVolumeView.setVolume(Float(value/100))
+        }
+        if type == "Video" {
+            guard let item = self.player.currentItem else {
+              return
+            }
+     
+            let targetTime = self.value * item.duration.seconds
+            player.seek(to: CMTime(seconds: targetTime, preferredTimescale: 600))
+        }
+//        if type == "Song" {
+//            should_update_from_timer = false
+//            let translation = drag.translation.x
+////            for n in 0...50 { //a for loop is a descent solution, maybe switch to more efficient if statements. Maybe we use this, idk yet.
+////            if Int(abs(drag.translation.x)) == Int(frame.size.width/50)*n {
+//                let music_player = MPMusicPlayerController.systemMusicPlayer
+//                DispatchQueue.global(qos: .background).async { //Updadting on main thread will freeze animation
+//                music_player.currentPlaybackTime = value/100*(duration ?? 0)
+////                }
+////            }
+//            }
+//        }
+    }
+    private func getOffsetX(frame: CGRect) -> CGFloat {
+        let width = (knob: knobWidth ?? frame.size.height, view: frame.size.width)
+        let xrange: (Double, Double) = (0, Double(width.view - width.knob))
+        let result = self.value.convert(fromRange: range, toRange: xrange)
+        return CGFloat(result)
+    }
+}
+
 struct skeumorphic_alert: View {
     var title: String?
     var subtitle: String?
@@ -1482,14 +1963,14 @@ struct skeumorphic_alert: View {
                             Spacer()
                         }
                         VStack(alignment:.center) {
-                            Text(title ?? "").font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.white).shadow(color: Color.black.opacity(0.80), radius: 0, x: 0.0, y: -1.2).padding(.top, 15)
+                            Text(title ?? "").font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.white).shadow(color: Color.black.opacity(0.80), radius: 0, x: 0.0, y: -1.2).padding(.top, 15)
                             Spacer()
-                            Text(subtitle ?? "").font(.custom("Helvetica Neue Regular", size: 14.5)).foregroundColor(.white).shadow(color: Color.black.opacity(0.80), radius: 0, x: 0.0, y: -1.2).multilineTextAlignment(.center).padding([.leading, .trailing], 10).padding(.bottom, 5)
+                            Text(subtitle ?? "").font(.custom("Helvetica Neue Regular", fixedSize: 14.5)).foregroundColor(.white).shadow(color: Color.black.opacity(0.80), radius: 0, x: 0.0, y: -1.2).multilineTextAlignment(.center).padding([.leading, .trailing], 10).padding(.bottom, 5)
                             Spacer()
                             Button(action:{dismiss_action?()}) {
                             ZStack {
                             RoundedRectangle(cornerRadius: 6).fill(LinearGradient([(color:Color(red: 214/255, green: 214/255, blue: 214/255), location: 0), (color:Color(red: 113/255, green: 115/255, blue: 119/255), location: 0.49), (color:Color(red: 74/255, green: 75/255, blue: 78/255), location: 0.50), (color:Color(red: 102/255, green: 103/255, blue: 106/255), location: 1)], from: .top, to: .bottom)).shadow(color: Color.white.opacity(0.2), radius: 0, x: 0, y: 0.5).opacity(0.80).blendMode(.screen).strokeRoundedRectangle(6, Color(red: 19/255, green: 30/255, blue: 58/255), lineWidth: 1).frame(height:40).padding(.bottom, 8).padding([.leading, .trailing], 8)
-                                Text("OK").font(.custom("Helvetica Neue Bold", size: 18)).foregroundColor(.white).shadow(color: Color.black.opacity(0.80), radius: 0, x: 0.0, y: -1.2).padding(.bottom, 8)
+                                Text("OK").font(.custom("Helvetica Neue Bold", fixedSize: 18)).foregroundColor(.white).shadow(color: Color.black.opacity(0.80), radius: 0, x: 0.0, y: -1.2).padding(.bottom, 8)
                             }
                             }
                              
@@ -1577,7 +2058,70 @@ struct tool_bar_rectangle_button: View {
                 if use_image == true {
                     Image(content).resizable().scaledToFit().frame(width: 13).padding([.leading, .trailing], 11)
                 } else {
-                Text(content).font(.custom("Helvetica Neue Bold", size: 13.25)).foregroundColor(.white).shadow(color: Color.black.opacity(0.75), radius: 1, x: 0, y: -0.25).lineLimit(0).padding([.leading, .trailing], 11)
+                Text(content).font(.custom("Helvetica Neue Bold", fixedSize: 13.25)).foregroundColor(.white).shadow(color: Color.black.opacity(0.75), radius: 1, x: 0, y: -0.25).lineLimit(0).padding([.leading, .trailing], 11)
+                }
+            }.frame(height: 32 + (height_modifier ?? 0)).ps_innerShadow(.roundedRectangle(5.5, returnLinearGradient(button_type)), radius:0.8, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
+        }.frame(height: 32 + (height_modifier ?? 0))
+    }
+}
+
+struct tool_bar_rectangle_button_gray_out: View {
+    public var action: (() -> Void)?
+    var button_type: tool_bar_button_type
+    var content: String
+    var use_image: Bool?
+    var height_modifier: CGFloat? = 0
+    var gray_out: Bool
+    private let gray_gradient = LinearGradient([(color: Color(red: 164/255, green: 175/255, blue:191/255), location: 0), (color: Color(red: 124/255, green: 141/255, blue:164/255), location: 0.51), (color: Color(red: 113/255, green: 131/255, blue:156/255), location: 0.51), (color: Color(red: 112/255, green: 130/255, blue:155/255), location: 1)], from: .top, to: .bottom)
+    private let blue_gradient = LinearGradient([(color: Color(red: 120/255, green: 158/255, blue:237/255), location: 0), (color: Color(red: 55/255, green: 110/255, blue:224/255), location: 0.51), (color: Color(red: 34/255, green: 96/255, blue:221/255), location: 0.52), (color: Color(red: 36/255, green: 100/255, blue:224/255), location: 1)], from: .top, to: .bottom)
+    var body: some View {
+        Button(action:{action?()}) {
+            ZStack {
+                if use_image == true {
+                    Image(content).resizable().scaledToFit().frame(width: 13).padding([.leading, .trailing], 11)
+                } else {
+                    Text(content).font(.custom("Helvetica Neue Bold", fixedSize: 13.25)).foregroundColor(gray_out ? Color(red: 197/255, green: 202/255, blue: 210/255): .white).shadow(color: Color.black.opacity(0.75), radius: 1, x: 0, y: -0.25).lineLimit(0).padding([.leading, .trailing], 11)
+                }
+            }.frame(height: 32 + (height_modifier ?? 0)).ps_innerShadow(.roundedRectangle(5.5, returnLinearGradient(button_type)), radius:0.8, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
+        }.frame(height: 32 + (height_modifier ?? 0))
+    }
+}
+
+struct tool_bar_rectangle_button_image_done_size: View { //Is this a bad solution? I mean yeah. But does it work? Yeah.
+    public var action: (() -> Void)?
+    var button_type: tool_bar_button_type
+    var content: String
+    var use_image: Bool?
+    var height_modifier: CGFloat? = 0
+    private let gray_gradient = LinearGradient([(color: Color(red: 164/255, green: 175/255, blue:191/255), location: 0), (color: Color(red: 124/255, green: 141/255, blue:164/255), location: 0.51), (color: Color(red: 113/255, green: 131/255, blue:156/255), location: 0.51), (color: Color(red: 112/255, green: 130/255, blue:155/255), location: 1)], from: .top, to: .bottom)
+    private let blue_gradient = LinearGradient([(color: Color(red: 120/255, green: 158/255, blue:237/255), location: 0), (color: Color(red: 55/255, green: 110/255, blue:224/255), location: 0.51), (color: Color(red: 34/255, green: 96/255, blue:221/255), location: 0.52), (color: Color(red: 36/255, green: 100/255, blue:224/255), location: 1)], from: .top, to: .bottom)
+    var body: some View {
+        Button(action:{action?()}) {
+            ZStack {
+                    Image(content).resizable().scaledToFit().frame(width: 30)
+
+                Text("Done").font(.custom("Helvetica Neue Bold", fixedSize: 13.25)).foregroundColor(.white).shadow(color: Color.black.opacity(0.75), radius: 1, x: 0, y: -0.25).lineLimit(0).padding([.leading, .trailing], 11).opacity(0)
+                
+            }.frame(height: 32 + (height_modifier ?? 0)).ps_innerShadow(.roundedRectangle(5.5, returnLinearGradient(button_type)), radius:0.8, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
+        }.frame(height: 32 + (height_modifier ?? 0))
+    }
+}
+
+struct tool_bar_rectangle_button_smaller_image: View {
+    public var action: (() -> Void)?
+    var button_type: tool_bar_button_type
+    var content: String
+    var use_image: Bool?
+    var height_modifier: CGFloat? = 0
+    private let gray_gradient = LinearGradient([(color: Color(red: 164/255, green: 175/255, blue:191/255), location: 0), (color: Color(red: 124/255, green: 141/255, blue:164/255), location: 0.51), (color: Color(red: 113/255, green: 131/255, blue:156/255), location: 0.51), (color: Color(red: 112/255, green: 130/255, blue:155/255), location: 1)], from: .top, to: .bottom)
+    private let blue_gradient = LinearGradient([(color: Color(red: 120/255, green: 158/255, blue:237/255), location: 0), (color: Color(red: 55/255, green: 110/255, blue:224/255), location: 0.51), (color: Color(red: 34/255, green: 96/255, blue:221/255), location: 0.52), (color: Color(red: 36/255, green: 100/255, blue:224/255), location: 1)], from: .top, to: .bottom)
+    var body: some View {
+        Button(action:{action?()}) {
+            ZStack {
+                if use_image == true {
+                    Image(content).resizable().scaledToFit().frame(width: 7).padding([.leading, .trailing], 13)
+                } else {
+                Text(content).font(.custom("Helvetica Neue Bold", fixedSize: 13.25)).foregroundColor(.white).shadow(color: Color.black.opacity(0.75), radius: 1, x: 0, y: -0.25).lineLimit(0).padding([.leading, .trailing], 11)
                 }
             }.frame(height: 32 + (height_modifier ?? 0)).ps_innerShadow(.roundedRectangle(5.5, returnLinearGradient(button_type)), radius:0.8, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
         }.frame(height: 32 + (height_modifier ?? 0))
@@ -1598,7 +2142,7 @@ struct tool_bar_rectangle_button_larger_image: View {
                 if use_image == true {
                     Image(content).resizable().scaledToFit().frame(width: 19).padding([.leading, .trailing], 7)
                 } else {
-                Text(content).font(.custom("Helvetica Neue Bold", size: 13.25)).foregroundColor(.white).shadow(color: Color.black.opacity(0.75), radius: 1, x: 0, y: -0.25).lineLimit(0).padding([.leading, .trailing], 11)
+                Text(content).font(.custom("Helvetica Neue Bold", fixedSize: 13.25)).foregroundColor(.white).shadow(color: Color.black.opacity(0.75), radius: 1, x: 0, y: -0.25).lineLimit(0).padding([.leading, .trailing], 11)
                 }
             }.frame(height: 32 + (height_modifier ?? 0)).ps_innerShadow(.roundedRectangle(5.5, returnLinearGradient(button_type)), radius:0.8, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
         }.frame(height: 32 + (height_modifier ?? 0))
@@ -1619,7 +2163,7 @@ struct tool_bar_rectangle_button_larger_image_wide: View {
                 if use_image == true {
                     Image(content).resizable().scaledToFit().frame(width: 22).padding([.leading, .trailing], 12).offset(x: 2, y: -1)
                 } else {
-                Text(content).font(.custom("Helvetica Neue Bold", size: 13.25)).foregroundColor(.white).shadow(color: Color.black.opacity(0.75), radius: 1, x: 0, y: -0.25).lineLimit(0).padding([.leading, .trailing], 11)
+                Text(content).font(.custom("Helvetica Neue Bold", fixedSize: 13.25)).foregroundColor(.white).shadow(color: Color.black.opacity(0.75), radius: 1, x: 0, y: -0.25).lineLimit(0).padding([.leading, .trailing], 11)
                 }
             }.frame(height: 32 + (height_modifier ?? 0)).ps_innerShadow(.roundedRectangle(5.5, returnLinearGradient(button_type)), radius:0.8, offset: CGPoint(0, 0.6), intensity: 0.7).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
         }.frame(height: 32 + (height_modifier ?? 0))
@@ -1643,7 +2187,7 @@ struct tool_bar_rectangle_button_custom_radius: View {
                 if use_image == true {
                     Image(content).resizable().scaledToFit().frame(width: 13).padding([.leading, .trailing], 11)
                 } else {
-                    Text(content).font(.custom("Helvetica Neue Bold", size: 13.25)).foregroundColor(.white).shadow(color: Color.black.opacity(0.75), radius: 0, x: 0, y: -1).lineLimit(0).padding([.leading, .trailing], 11)
+                    Text(content).font(.custom("Helvetica Neue Bold", fixedSize: 13.25)).foregroundColor(.white).shadow(color: Color.black.opacity(0.75), radius: 0, x: 0, y: -1).lineLimit(0).padding([.leading, .trailing], 11)
                 }
             }.frame(height: 32 + (height_modifier ?? 0)).ps_innerShadow(.roundedRectangle(radius, returnLinearGradient(button_type)), radius:0.8, offset: CGPoint(0, 0.6), intensity: 0.8).shadow(color: Color.white.opacity(0.28), radius: 0, x: 0, y: 0.8)
         }.frame(height: 32 + (height_modifier ?? 0))
