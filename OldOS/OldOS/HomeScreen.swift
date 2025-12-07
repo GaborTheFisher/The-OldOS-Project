@@ -312,103 +312,144 @@ struct home_bar: View {
     @Binding var show_remove: Bool
     @Binding var folder_offset: CGFloat
     @Binding var show_folder: Bool
+    
+    @State private var isPressed: Bool = false
+    @State private var pressCount = 0
+    @State private var actionWorkItem: DispatchWorkItem?
+
     var body: some View {
         ZStack {
-            Color.black.edgesIgnoringSafeArea(.all)
-            HStack {
-                Spacer()
-                ZStack {
-                    Circle().fill(Color.black).frame(width: 65, height:65).overlay(
-                        Circle()
-                            .stroke(Color.gray.opacity(0.35), lineWidth: 1)
-                    )
-                    Circle().fill(LinearGradient(gradient: Gradient(colors: [.black, .black, .black, Color.gray.opacity(0.35)]), startPoint: .top, endPoint: .bottom)).frame(width: 65, height:65)
-                    RoundedRectangle(cornerRadius: 4).fill(Color.black).frame(width: 20, height:20).overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.gray.opacity(0.65), lineWidth: 1.75)
-                    )
-                } .tapRecognizer(tapSensitivity: 0.2, singleTapAction: {
-                    let impactHeavy = UIImpactFeedbackGenerator(style: .heavy)
-                    impactHeavy.impactOccurred()
-                    if show_multitasking == false {
-                        if current_view != "LS" && current_view != "HS" {
-                            withAnimation(.linear(duration: 0.35)) {
-                                self.current_view = "HS"
-                            }
-                            DispatchQueue.global().asyncAfter(deadline:.now()+0.01) { //I wish I knew why, but we can no longer render this on main, it needs to be on global to avoid LazyVGrid rendering errors
-                                withAnimation(.linear(duration: 0.42)) {
-                                    apps_scale = 1
-                                    dock_offset = 0
-                                }
-                            }
-                        } else {
-                            withAnimation() {
-                                // when on the first page, pressing the home button shows the spotlight search
-                                // https://www.youtube.com/watch?v=hMZXnyk2SJA
-                                if show_folder && folder_offset == 150 {
-                                    withAnimation(.linear(duration: 0.32)) {
-                                        folder_offset = 0
-                                        //dock_offset = 150
-                                    }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
-                                        show_folder = false
-                                    }
-                                } else {
-                                    if selectedPage == 1 {
-                                        selectedPage = 0
-                                    } else {
-                                        selectedPage = 1
-                                    }
-                                }
-                            }
+            ZStack {
+                Circle().fill(Color.black).frame(width: 65, height:65).overlay(
+                    Circle()
+                        .stroke(Color.gray.opacity(0.35), lineWidth: 1)
+                )
+                Circle().fill(LinearGradient(gradient: Gradient(colors: [.black, .black, .black, Color.gray.opacity(0.35)]), startPoint: .top, endPoint: .bottom)).frame(width: 65, height:65)
+                RoundedRectangle(cornerRadius: 4).fill(Color.black).frame(width: 20, height:20).overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(Color.gray.opacity(0.65), lineWidth: 1.75)
+                )
+            }
+            .scaleEffect(isPressed ? 0.93 : 1.0)
+            .shadow(color: isPressed ? Color.gray.opacity(0.4) : Color.clear, radius: 4, x: 0, y: 1)
+            
+            ForceTouchGestureView(onStateChange: { isPressedDown in
+                handlePress(isDown: isPressedDown)
+            })
+            .frame(width: 65, height: 65)
+        }
+        .padding()
+    }
+        
+    private func handlePress(isDown: Bool) {
+        // Always update visual state and haptics
+        self.isPressed = isDown
+        
+        if isDown {
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            
+            // Cancel any pending single-press action from a previous tap
+            actionWorkItem?.cancel()
+            
+            pressCount += 1
+            
+            if pressCount == 2 {
+                // This is a confirmed double-press, fire the action immediately
+                performDoubleHomeAction()
+            }
+            
+        } else {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            
+            if pressCount == 1 {
+                // The user has lifted their finger after one press.
+                // Schedule the single-press action to happen after a short delay.
+                actionWorkItem = DispatchWorkItem {
+                    performHomeAction()
+                    pressCount = 0 // Reset after action is performed
+                }
+                // The 0.3s delay gives the user time to initiate a second press.
+                // If they do, the `cancel()` above will stop this from running.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: actionWorkItem!)
+                
+            } else if pressCount >= 2 {
+                // If it was a double-press or more, just reset the count immediately on release.
+                pressCount = 0
+            }
+        }
+    }
+    
+    private func performHomeAction() {
+        if show_multitasking == false {
+            if current_view != "LS" && current_view != "HS" {
+                withAnimation(.linear(duration: 0.35)) {
+                    self.current_view = "HS"
+                }
+                DispatchQueue.global().asyncAfter(deadline:.now()+0.01) {
+                    withAnimation(.linear(duration: 0.42)) {
+                        apps_scale = 1
+                        dock_offset = 0
+                    }
+                }
+            } else {
+                withAnimation() {
+                    if show_folder && folder_offset == 150 {
+                        withAnimation(.linear(duration: 0.32)) {
+                            folder_offset = 0
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
+                            show_folder = false
                         }
                     } else {
-                        if should_update, show_remove {
-                            should_update = false
-                            show_remove = false
+                        if selectedPage == 1 {
+                            selectedPage = 0
                         } else {
-                        withAnimation {
-                            show_multitasking = false
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.36) {
-                            instant_multitasking_change = false
-                        }
+                            selectedPage = 1
                         }
                     }
-                    
-                }, doubleTapAction: {
-                    let generator = UINotificationFeedbackGenerator()
-                              generator.notificationOccurred(.success)
-                    if current_view != "LS" && !show_folder {
-                        current_multitasking_app = current_view
-                        if !momentary_disable {
-                            if !show_multitasking {
-                                instant_multitasking_change = true
-                                momentary_disable = true
-                                withAnimation {
-                                    show_multitasking = true
-                                }
-                            } else {
-                                momentary_disable = true
-                                withAnimation {
-                                    show_multitasking = false
-                                }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.36) {
-                                    instant_multitasking_change = false
-                                }
-                            }
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            momentary_disable = false
-                        }
+                }
+            }
+        } else {
+            if should_update, show_remove {
+                should_update = false
+                show_remove = false
+            } else {
+                withAnimation {
+                    show_multitasking = false
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.36) {
+                    instant_multitasking_change = false
+                }
+            }
+        }
+    }
+    
+    private func performDoubleHomeAction() {
+        if current_view != "LS" && !show_folder {
+            current_multitasking_app = current_view
+            if !momentary_disable {
+                if !show_multitasking {
+                    instant_multitasking_change = true
+                    momentary_disable = true
+                    withAnimation {
+                        show_multitasking = true
                     }
-                })
-                Spacer()
-            }.padding()
+                } else {
+                    momentary_disable = true
+                    withAnimation {
+                        show_multitasking = false
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.36) {
+                        instant_multitasking_change = false
+                    }
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                momentary_disable = false
+            }
         }
     }
 }
-
 //Thanks to https://stackoverflow.com/questions/66430942/handle-single-click-and-double-click-while-updating-the-view/66432412#66432412 for this solution. SwiftUI causes a delay in tapGestures...which is really annoying.
 
 struct TapRecognizerViewModifier: ViewModifier {
@@ -1714,3 +1755,70 @@ extension UIApplication {
     }
 }
 
+
+/// Wrapper view to detect force touch press states and report pressed changes.
+/// This version is now universal and works for all devices.
+struct ForceTouchGestureView: UIViewRepresentable {
+    var onStateChange: (Bool) -> Void // (isPressedDown: Bool)
+    var minimumForce: CGFloat = 0.25
+
+    func makeUIView(context: Context) -> some UIView {
+        let view = TouchForwardingView()
+        view.onStateChange = onStateChange
+        view.minimumForce = minimumForce
+        view.isUserInteractionEnabled = true
+        view.backgroundColor = .clear
+        return view
+    }
+
+    func updateUIView(_ uiView: UIViewType, context: Context) {}
+}
+
+private class TouchForwardingView: UIView {
+    var onStateChange: ((Bool) -> Void)?
+    var minimumForce: CGFloat = 0.25
+    private var isPressed: Bool = false
+
+    // This method now handles both 3D Touch and standard devices
+    private func handleTouch(_ touch: UITouch?) {
+        guard let touch = touch else { return }
+        
+        // Check if the device supports Force Touch
+        let hasForceTouch = touch.maximumPossibleForce > 0
+        
+        let isNowPressed = hasForceTouch
+            ? (touch.force / touch.maximumPossibleForce > minimumForce) // 3D Touch logic
+            : true // Standard device: any touch-down is a "press"
+        
+        if self.isPressed != isNowPressed {
+            self.isPressed = isNowPressed
+            self.onStateChange?(self.isPressed)
+        }
+    }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        handleTouch(touches.first)
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
+        handleTouch(touches.first)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        if isPressed {
+            isPressed = false
+            onStateChange?(false)
+        }
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        if isPressed {
+            isPressed = false
+            onStateChange?(false)
+        }
+    }
+}
